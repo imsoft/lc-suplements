@@ -1,0 +1,44 @@
+import { NextRequest, NextResponse } from "next/server";
+
+const PROTECTED_STORE = ["/orders", "/wishlist", "/account", "/checkout"];
+const PROTECTED_ADMIN = ["/admin"];
+const AUTH_ROUTES = ["/auth/login", "/auth/register"];
+
+// Cookie name: prefix.session_token (default prefix = "better-auth")
+const SESSION_COOKIE = "better-auth.session_token";
+
+export function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  const hasSession = request.cookies.has(SESSION_COOKIE);
+
+  const isAuthRoute = AUTH_ROUTES.some((r) => pathname.startsWith(r));
+  const isProtectedStore = PROTECTED_STORE.some((r) => pathname.startsWith(r));
+  const isAdminRoute = PROTECTED_ADMIN.some((r) => pathname.startsWith(r));
+
+  // Si ya tiene sesión no necesita ir a login/register
+  if (isAuthRoute && hasSession) {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  // Rutas protegidas de la tienda → login
+  if (isProtectedStore && !hasSession) {
+    const loginUrl = new URL("/auth/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Rutas de admin → login si no hay sesión
+  // La validación del rol ADMIN la hace el layout/server action correspondiente
+  if (isAdminRoute && !hasSession) {
+    return NextResponse.redirect(new URL("/auth/login", request.url));
+  }
+
+  return NextResponse.next();
+}
+
+export const config = {
+  matcher: [
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)).*)",
+  ],
+};
