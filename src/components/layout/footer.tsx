@@ -40,12 +40,14 @@ export function Footer() {
 
           <div>
             <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">
-              Legal
+              Empresa
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
+              <li><Link href="/nosotros" className="hover:text-primary">Nosotros</Link></li>
+              <li><Link href="/contacto" className="hover:text-primary">Contacto</Link></li>
+              <li><Link href="/faq" className="hover:text-primary">Preguntas frecuentes</Link></li>
               <li><Link href="/terminos" className="hover:text-primary">Términos y condiciones</Link></li>
               <li><Link href="/aviso-privacidad" className="hover:text-primary">Aviso de privacidad</Link></li>
-              <li><Link href="/contacto" className="hover:text-primary">Contacto</Link></li>
             </ul>
           </div>
         </div>

@@ -19,7 +19,9 @@ const NAV_LINKS = [
   { href: "/products", label: "Productos" },
   { href: "/products?category=proteinas", label: "Proteínas" },
   { href: "/products?category=creatinas", label: "Creatinas" },
-  { href: "/products?category=vitaminas", label: "Vitaminas" },
+  { href: "/nosotros", label: "Nosotros" },
+  { href: "/faq", label: "FAQ" },
+  { href: "/contacto", label: "Contacto" },
 ];
 
 export function Header() {

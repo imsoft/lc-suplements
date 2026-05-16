@@ -31,43 +31,102 @@ export default async function HomePage() {
   return (
     <div>
       {/* Hero */}
-      <section className="relative flex min-h-[70vh] items-center justify-center overflow-hidden bg-secondary px-4 text-center">
-        <div className="relative z-10 mx-auto max-w-3xl">
-          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.3em] text-primary">
-            Suplementos de élite
-          </p>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-            Lleva tu rendimiento
-            <br />
-            <span className="text-primary">al siguiente nivel</span>
-          </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
-            Proteínas, creatinas, vitaminas y suplementos de la más alta calidad.
-            Envíos a todo México.
-          </p>
-          <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <Button size="lg" asChild>
-              <Link href="/products">Ver catálogo</Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/products?sort=newest">Nuevos productos</Link>
-            </Button>
+      <section className="relative flex min-h-screen items-center overflow-hidden bg-secondary">
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(rgba(255,255,255,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.8) 1px, transparent 1px)",
+            backgroundSize: "60px 60px",
+          }}
+        />
+        <div className="absolute right-0 top-1/2 h-[600px] w-[600px] -translate-y-1/2 rounded-full bg-primary/20 blur-[140px]" />
+        <div className="absolute bottom-0 left-0 h-[300px] w-[300px] rounded-full bg-primary/10 blur-[80px]" />
+
+        <div className="relative z-10 mx-auto max-w-7xl px-4 py-32 sm:px-6 lg:px-8">
+          <div className="max-w-4xl">
+            <p className="mb-6 inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.4em] text-primary">
+              <span className="inline-block h-px w-10 bg-primary" />
+              Suplementos de élite
+            </p>
+            <h1 className="text-7xl font-black uppercase leading-none tracking-tight text-white sm:text-9xl">
+              LLEVA TU
+              <br />
+              <span className="text-primary">RENDI-</span>
+              <br />
+              MIENTO
+              <br />
+              AL LÍMITE
+            </h1>
+            <p className="mt-10 max-w-lg text-lg leading-relaxed text-white/60">
+              Proteínas, creatinas, vitaminas y suplementos de la más alta
+              calidad. Envíos a todo México. Sin excusas.
+            </p>
+            <div className="mt-12 flex flex-wrap gap-4">
+              <Button
+                size="lg"
+                className="px-10 py-6 text-base font-bold uppercase tracking-widest"
+                asChild
+              >
+                <Link href="/products">Ver catálogo</Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-white/20 px-10 py-6 text-base font-bold uppercase tracking-widest text-white hover:bg-white/10"
+                asChild
+              >
+                <Link href="/nosotros">Nuestra historia</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-background to-transparent" />
+      </section>
+
+      {/* Stats */}
+      <section className="border-y border-border py-10">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
+            {[
+              { value: "+500", label: "Productos" },
+              { value: "+10K", label: "Clientes" },
+              { value: "100%", label: "Originales" },
+              { value: "48h", label: "Entrega" },
+            ].map((stat) => (
+              <div key={stat.label} className="text-center">
+                <p className="text-4xl font-black text-primary">{stat.value}</p>
+                <p className="mt-1 text-xs font-bold uppercase tracking-[0.3em] text-muted-foreground">
+                  {stat.label}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
       {/* Categories */}
       {categories.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
-          <h2 className="mb-8 text-2xl font-bold tracking-tight">Categorías</h2>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+        <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
+          <div className="mb-12">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
+              Explora
+            </p>
+            <h2 className="text-5xl font-black uppercase tracking-tight">
+              Categorías
+            </h2>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {categories.map((cat) => (
               <Link
                 key={cat.id}
                 href={`/products?category=${cat.slug}`}
-                className="flex flex-col items-center justify-center rounded border border-border bg-card p-6 text-center transition-shadow hover:border-primary hover:shadow-md"
+                className="group flex flex-col items-center justify-center bg-secondary p-10 text-center transition-colors hover:bg-primary"
               >
-                <span className="text-sm font-semibold">{cat.name}</span>
+                <span className="text-sm font-bold uppercase tracking-wider text-secondary-foreground transition-colors group-hover:text-primary-foreground">
+                  {cat.name}
+                </span>
               </Link>
             ))}
           </div>
@@ -76,40 +135,124 @@ export default async function HomePage() {
 
       {/* Featured Products */}
       {featuredProducts.length > 0 && (
-        <section className="mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8">
-          <div className="mb-8 flex items-center justify-between">
-            <h2 className="text-2xl font-bold tracking-tight">Productos destacados</h2>
-            <Link href="/products" className="text-sm text-primary hover:underline">
-              Ver todos →
-            </Link>
-          </div>
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-            {featuredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={{
-                  ...product,
-                  variants: product.variants.map((v) => ({ price: Number(v.price) })),
-                }}
-              />
-            ))}
+        <section className="bg-secondary/5 py-24">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="mb-12 flex items-end justify-between">
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
+                  Lo mejor
+                </p>
+                <h2 className="text-5xl font-black uppercase tracking-tight">
+                  Destacados
+                </h2>
+              </div>
+              <Link
+                href="/products"
+                className="text-sm font-bold uppercase tracking-wider text-primary hover:underline"
+              >
+                Ver todos →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+              {featuredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={{
+                    ...product,
+                    variants: product.variants.map((v) => ({
+                      price: Number(v.price),
+                    })),
+                  }}
+                />
+              ))}
+            </div>
           </div>
         </section>
       )}
 
-      {/* Value props */}
-      <section className="border-t border-border bg-secondary px-4 py-12">
-        <div className="mx-auto grid max-w-5xl gap-8 sm:grid-cols-3">
-          {[
-            { title: "Envíos a todo México", desc: "Recibe tus productos en la puerta de tu casa." },
-            { title: "Productos originales", desc: "Solo marcas certificadas y de la más alta calidad." },
-            { title: "Pago seguro", desc: "Paga con tarjeta, OXXO o transferencia vía MercadoPago." },
-          ].map((prop) => (
-            <div key={prop.title} className="text-center">
-              <h3 className="font-bold text-primary">{prop.title}</h3>
-              <p className="mt-2 text-sm text-muted-foreground">{prop.desc}</p>
-            </div>
-          ))}
+      {/* Why us */}
+      <section className="bg-secondary py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 text-center">
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
+              ¿Por qué elegirnos?
+            </p>
+            <h2 className="text-5xl font-black uppercase tracking-tight text-secondary-foreground">
+              Sin compromisos
+            </h2>
+          </div>
+          <div className="grid gap-px bg-white/10 sm:grid-cols-2 lg:grid-cols-4">
+            {[
+              {
+                icon: "🚚",
+                title: "Envíos a todo México",
+                desc: "Recibe tus productos en la puerta de tu casa en 24-48 horas.",
+              },
+              {
+                icon: "✅",
+                title: "100% Originales",
+                desc: "Solo marcas certificadas, sin falsificaciones ni productos adulterados.",
+              },
+              {
+                icon: "🔒",
+                title: "Pago seguro",
+                desc: "Tarjeta, OXXO o transferencia vía MercadoPago, siempre protegido.",
+              },
+              {
+                icon: "💬",
+                title: "Asesoría experta",
+                desc: "Nuestros especialistas te ayudan a encontrar el suplemento ideal.",
+              },
+            ].map((prop) => (
+              <div
+                key={prop.title}
+                className="bg-secondary p-8 text-secondary-foreground"
+              >
+                <p className="mb-4 text-4xl">{prop.icon}</p>
+                <h3 className="mb-3 font-bold uppercase tracking-wider text-primary">
+                  {prop.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-white/60">
+                  {prop.desc}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA final */}
+      <section className="py-32 text-center">
+        <div className="mx-auto max-w-3xl px-4">
+          <p className="mb-4 text-xs font-bold uppercase tracking-[0.4em] text-primary">
+            Empieza hoy
+          </p>
+          <h2 className="text-6xl font-black uppercase tracking-tight sm:text-7xl">
+            ¿Listo para
+            <br />
+            <span className="text-primary">superarte?</span>
+          </h2>
+          <p className="mx-auto mt-8 max-w-xl text-lg text-muted-foreground">
+            Encuentra el suplemento perfecto para alcanzar tus metas. Somos tu
+            aliado en cada entrenamiento.
+          </p>
+          <div className="mt-12 flex flex-wrap justify-center gap-4">
+            <Button
+              size="lg"
+              className="px-12 py-6 text-base font-bold uppercase tracking-widest"
+              asChild
+            >
+              <Link href="/products">Comprar ahora</Link>
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="px-12 py-6 text-base font-bold uppercase tracking-widest"
+              asChild
+            >
+              <Link href="/contacto">Contactarnos</Link>
+            </Button>
+          </div>
         </div>
       </section>
     </div>
