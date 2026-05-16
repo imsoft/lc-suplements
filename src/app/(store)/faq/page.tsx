@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AnimateIn } from "@/components/ui/animate-in";
+import { FaqItem } from "@/components/store/faq-item";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -123,26 +124,8 @@ export default function FaqPage() {
                 {section.category}
               </h2>
               <div className="space-y-px">
-                {section.items.map((item, ii) => (
-                  <details
-                    key={item.q}
-                    className="group border border-border"
-                    style={{
-                      animationDelay: `${ii * 60}ms`,
-                    }}
-                  >
-                    <summary className="flex cursor-pointer items-center justify-between gap-4 px-6 py-5 font-bold uppercase tracking-wide transition-colors hover:text-primary [&::-webkit-details-marker]:hidden">
-                      <span>{item.q}</span>
-                      <span className="shrink-0 text-xl font-black text-primary transition-transform duration-300 group-open:rotate-45">
-                        +
-                      </span>
-                    </summary>
-                    <div className="border-t border-border px-6 py-5">
-                      <p className="leading-relaxed text-muted-foreground">
-                        {item.a}
-                      </p>
-                    </div>
-                  </details>
+                {section.items.map((item) => (
+                  <FaqItem key={item.q} q={item.q} a={item.a} />
                 ))}
               </div>
             </AnimateIn>
