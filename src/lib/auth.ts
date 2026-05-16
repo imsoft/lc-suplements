@@ -39,7 +39,9 @@ export const auth = betterAuth({
   },
   plugins: [
     nextCookies(),
-    dash({ apiKey: process.env.BETTER_AUTH_API_KEY! }),
+    ...(process.env.BETTER_AUTH_API_KEY
+      ? [dash({ apiKey: process.env.BETTER_AUTH_API_KEY })]
+      : []),
   ],
   trustedOrigins: [
     "https://lcsuplements.com",
