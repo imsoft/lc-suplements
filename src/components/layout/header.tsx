@@ -11,6 +11,10 @@ import {
   Menu01Icon,
   Search01Icon,
   Cancel01Icon,
+  Logout03Icon,
+  UserAccountIcon,
+  DeliveryBox01Icon,
+  Settings01Icon,
 } from "@hugeicons/core-free-icons";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -30,12 +34,25 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
   useEffect(() => {
     if (searchOpen) searchRef.current?.focus();
   }, [searchOpen]);
+
+  // Cierra el dropdown al hacer clic fuera
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   function handleSearch(e: React.FormEvent) {
     e.preventDefault();
@@ -44,6 +61,11 @@ export function Header() {
     router.push(`/products?q=${encodeURIComponent(q)}`);
     setSearchOpen(false);
     setSearchQuery("");
+  }
+
+  function handleSignOut() {
+    setUserMenuOpen(false);
+    signOut({ fetchOptions: { onSuccess: () => router.push("/") } });
   }
 
   return (
@@ -90,12 +112,8 @@ export function Header() {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSearchOpen(true)}
-          >
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon" onClick={() => setSearchOpen(true)}>
             <HugeiconsIcon icon={Search01Icon} size={20} />
           </Button>
 
@@ -111,21 +129,68 @@ export function Header() {
             </Link>
           </Button>
 
+          {/* User menu desktop */}
           {session ? (
-            <div className="hidden items-center gap-2 md:flex">
-              <Button variant="ghost" size="icon" asChild>
-                <Link href="/account">
-                  <HugeiconsIcon icon={UserCircleIcon} size={20} />
-                </Link>
+            <div className="relative hidden md:block" ref={userMenuRef}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setUserMenuOpen((v) => !v)}
+                className={userMenuOpen ? "text-primary" : ""}
+              >
+                <HugeiconsIcon icon={UserCircleIcon} size={20} />
               </Button>
-              {session.user.role === "ADMIN" && (
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/admin/dashboard">Admin</Link>
-                </Button>
+
+              {userMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-56 border border-border bg-background shadow-lg">
+                  {/* User info */}
+                  <div className="border-b border-border px-4 py-3">
+                    <p className="text-sm font-bold truncate">{session.user.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{session.user.email}</p>
+                  </div>
+
+                  {/* Links */}
+                  <nav className="py-1">
+                    <Link
+                      href="/account"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                    >
+                      <HugeiconsIcon icon={UserAccountIcon} size={16} className="text-muted-foreground" />
+                      Mi cuenta
+                    </Link>
+                    <Link
+                      href="/orders"
+                      onClick={() => setUserMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-secondary hover:text-secondary-foreground"
+                    >
+                      <HugeiconsIcon icon={DeliveryBox01Icon} size={16} className="text-muted-foreground" />
+                      Mis pedidos
+                    </Link>
+                    {session.user.role === "ADMIN" && (
+                      <Link
+                        href="/admin/dashboard"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-primary transition-colors hover:bg-secondary"
+                      >
+                        <HugeiconsIcon icon={Settings01Icon} size={16} />
+                        Panel admin
+                      </Link>
+                    )}
+                  </nav>
+
+                  {/* Sign out */}
+                  <div className="border-t border-border py-1">
+                    <button
+                      onClick={handleSignOut}
+                      className="flex w-full items-center gap-3 px-4 py-2.5 text-sm font-medium text-destructive transition-colors hover:bg-destructive/10"
+                    >
+                      <HugeiconsIcon icon={Logout03Icon} size={16} />
+                      Cerrar sesión
+                    </button>
+                  </div>
+                </div>
               )}
-              <Button variant="ghost" size="sm" onClick={() => signOut()}>
-                Salir
-              </Button>
             </div>
           ) : (
             <div className="hidden items-center gap-2 md:flex">
@@ -138,6 +203,7 @@ export function Header() {
             </div>
           )}
 
+          {/* Hamburger */}
           <Button
             variant="ghost"
             size="icon"
@@ -163,32 +229,60 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
-            <div className="mt-2 flex flex-col gap-2 border-t border-border pt-3">
+            <div className="mt-2 flex flex-col gap-1 border-t border-border pt-3">
               {session ? (
                 <>
-                  <Link href="/account" className="text-sm font-medium">
+                  <div className="mb-2 px-1">
+                    <p className="text-sm font-bold">{session.user.name}</p>
+                    <p className="text-xs text-muted-foreground">{session.user.email}</p>
+                  </div>
+                  <Link
+                    href="/account"
+                    className="flex items-center gap-2 py-2 text-sm font-medium hover:text-primary"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <HugeiconsIcon icon={UserAccountIcon} size={16} />
                     Mi cuenta
                   </Link>
+                  <Link
+                    href="/orders"
+                    className="flex items-center gap-2 py-2 text-sm font-medium hover:text-primary"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    <HugeiconsIcon icon={DeliveryBox01Icon} size={16} />
+                    Mis pedidos
+                  </Link>
                   {session.user.role === "ADMIN" && (
-                    <Link href="/admin/dashboard" className="text-sm font-medium">
-                      Panel Admin
+                    <Link
+                      href="/admin/dashboard"
+                      className="flex items-center gap-2 py-2 text-sm font-medium text-primary"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      <HugeiconsIcon icon={Settings01Icon} size={16} />
+                      Panel admin
                     </Link>
                   )}
                   <button
-                    onClick={() => signOut()}
-                    className="text-left text-sm font-medium text-destructive"
+                    onClick={handleSignOut}
+                    className="flex items-center gap-2 py-2 text-left text-sm font-medium text-destructive"
                   >
+                    <HugeiconsIcon icon={Logout03Icon} size={16} />
                     Cerrar sesión
                   </button>
                 </>
               ) : (
                 <>
-                  <Link href="/auth/login" className="text-sm font-medium">
+                  <Link
+                    href="/auth/login"
+                    className="py-2 text-sm font-medium hover:text-primary"
+                    onClick={() => setMobileOpen(false)}
+                  >
                     Iniciar sesión
                   </Link>
                   <Link
                     href="/auth/register"
-                    className="text-sm font-medium text-primary"
+                    className="py-2 text-sm font-medium text-primary"
+                    onClick={() => setMobileOpen(false)}
                   >
                     Registrarse
                   </Link>
