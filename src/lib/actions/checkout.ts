@@ -96,7 +96,7 @@ export async function createCheckout(data: CheckoutData) {
     });
   }
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://lcsuplements.com";
 
   const preference = await mpPreference.create({
     body: {

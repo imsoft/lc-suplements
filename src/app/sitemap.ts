@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://lcsuplementos.com";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://lcsuplements.com";
 
   const [products, categories] = await Promise.all([
     db.product.findMany({
@@ -17,6 +17,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: appUrl, lastModified: new Date(), changeFrequency: "daily", priority: 1 },
     { url: `${appUrl}/products`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
+    { url: `${appUrl}/nosotros`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${appUrl}/contacto`, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${appUrl}/faq`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${appUrl}/terminos`, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${appUrl}/aviso-privacidad`, changeFrequency: "yearly", priority: 0.3 },
   ];
 
   const categoryRoutes: MetadataRoute.Sitemap = categories.map((cat) => ({

@@ -80,7 +80,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       ? product.reviews.reduce((acc, r) => acc + r.rating, 0) / product.reviews.length
       : null;
 
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://lcsuplementos.com";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://lcsuplements.com";
   const lowestPrice = product.variants[0]?.price ? Number(product.variants[0].price) : null;
   const primaryImage = product.images.find((img) => img.isPrimary) ?? product.images[0];
 

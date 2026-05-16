@@ -13,7 +13,7 @@ const fontMono = JetBrains_Mono({
   variable: "--font-mono",
 });
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://lcsuplementos.com";
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://lcsuplements.com";
 
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
