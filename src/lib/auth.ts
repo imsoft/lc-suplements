@@ -16,7 +16,7 @@ export const auth = betterAuth({
     requireEmailVerification: false,
     sendResetPassword: async ({ user, url }) => {
       await resend.emails.send({
-        from: "LC Suplements <noreply@lcsuplementos.com>",
+        from: "LC Suplements <noreply@lcsuplements.com>",
         to: user.email,
         subject: "Recupera tu contraseña — LC Suplements",
         html: resetPasswordEmail(user.name ?? "Cliente", url),
@@ -37,7 +37,11 @@ export const auth = betterAuth({
     },
   },
   plugins: [nextCookies()],
-  trustedOrigins: [process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"],
+  trustedOrigins: [
+    "https://lcsuplements.com",
+    "https://www.lcsuplements.com",
+    ...(process.env.NEXT_PUBLIC_APP_URL ? [process.env.NEXT_PUBLIC_APP_URL] : ["http://localhost:3000"]),
+  ],
   rateLimit: {
     enabled: true,
     window: 60,
