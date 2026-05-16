@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AnimateIn } from "@/components/ui/animate-in";
 
 export const metadata: Metadata = {
   title: "Términos y Condiciones | LC Suplements",
@@ -9,7 +10,7 @@ const LAST_UPDATED = "14 de mayo de 2025";
 
 export default function TerminosPage() {
   return (
-    <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
+    <AnimateIn className="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
       <h1 className="mb-2 text-3xl font-bold tracking-tight">Términos y Condiciones</h1>
       <p className="mb-10 text-sm text-muted-foreground">Última actualización: {LAST_UPDATED}</p>
 
@@ -153,6 +154,6 @@ export default function TerminosPage() {
         </section>
 
       </div>
-    </div>
+    </AnimateIn>
   );
 }

@@ -1,4 +1,5 @@
 import { ContactForm } from "@/components/store/contact-form";
+import { AnimateIn } from "@/components/ui/animate-in";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -22,11 +23,11 @@ export default function ContactoPage() {
         />
         <div className="absolute left-0 top-0 h-96 w-96 rounded-full bg-primary/20 blur-[100px]" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="mb-4 inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.4em] text-primary">
+          <p className="animate-in fade-in slide-in-from-bottom-4 fill-mode-both duration-700 mb-4 inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.4em] text-primary">
             <span className="inline-block h-px w-10 bg-primary" />
             Estamos aquí para ti
           </p>
-          <h1 className="max-w-3xl text-7xl font-black uppercase leading-none tracking-tight text-white sm:text-9xl">
+          <h1 className="animate-in fade-in slide-in-from-bottom-8 fill-mode-both delay-150 duration-700 max-w-3xl text-7xl font-black uppercase leading-none tracking-tight text-white sm:text-9xl">
             CONTÁC-
             <br />
             <span className="text-primary">TANOS</span>
@@ -38,7 +39,7 @@ export default function ContactoPage() {
       <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
         <div className="grid gap-16 lg:grid-cols-5">
           {/* Info */}
-          <div className="lg:col-span-2">
+          <AnimateIn className="lg:col-span-2" from="left">
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
               Información
             </p>
@@ -47,61 +48,63 @@ export default function ContactoPage() {
             </h2>
 
             <div className="space-y-8">
-              <div className="border-l-2 border-primary pl-6">
-                <p className="mb-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Correo electrónico
-                </p>
-                <p className="font-semibold">contacto@lcsuplements.com</p>
-              </div>
-              <div className="border-l-2 border-primary pl-6">
-                <p className="mb-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Teléfono / WhatsApp
-                </p>
-                <p className="font-semibold">+52 (55) 1234-5678</p>
-              </div>
-              <div className="border-l-2 border-primary pl-6">
-                <p className="mb-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Horario de atención
-                </p>
-                <p className="font-semibold">Lun – Vie: 9:00 – 18:00</p>
-                <p className="text-sm text-muted-foreground">Sábados: 10:00 – 14:00</p>
-              </div>
-              <div className="border-l-2 border-primary pl-6">
-                <p className="mb-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                  Redes sociales
-                </p>
-                <div className="flex gap-4">
-                  <a
-                    href="https://instagram.com/lcsuplements"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-semibold text-primary hover:underline"
-                  >
-                    Instagram
-                  </a>
-                  <a
-                    href="https://facebook.com/lcsuplements"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-semibold text-primary hover:underline"
-                  >
-                    Facebook
-                  </a>
-                  <a
-                    href="https://tiktok.com/@lcsuplements"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm font-semibold text-primary hover:underline"
-                  >
-                    TikTok
-                  </a>
+              {[
+                {
+                  label: "Correo electrónico",
+                  content: "contacto@lcsuplements.com",
+                },
+                {
+                  label: "Teléfono / WhatsApp",
+                  content: "+52 (55) 1234-5678",
+                },
+                {
+                  label: "Horario de atención",
+                  content: "Lun – Vie: 9:00 – 18:00",
+                  sub: "Sábados: 10:00 – 14:00",
+                },
+              ].map((item, i) => (
+                <AnimateIn key={item.label} delay={i * 100}>
+                  <div className="border-l-2 border-primary pl-6">
+                    <p className="mb-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      {item.label}
+                    </p>
+                    <p className="font-semibold">{item.content}</p>
+                    {item.sub && (
+                      <p className="text-sm text-muted-foreground">{item.sub}</p>
+                    )}
+                  </div>
+                </AnimateIn>
+              ))}
+
+              <AnimateIn delay={300}>
+                <div className="border-l-2 border-primary pl-6">
+                  <p className="mb-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    Redes sociales
+                  </p>
+                  <div className="flex gap-4">
+                    {[
+                      { label: "Instagram", href: "https://instagram.com/lcsuplements" },
+                      { label: "Facebook", href: "https://facebook.com/lcsuplements" },
+                      { label: "TikTok", href: "https://tiktok.com/@lcsuplements" },
+                    ].map((social) => (
+                      <a
+                        key={social.label}
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm font-semibold text-primary hover:underline"
+                      >
+                        {social.label}
+                      </a>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              </AnimateIn>
             </div>
-          </div>
+          </AnimateIn>
 
           {/* Form */}
-          <div className="lg:col-span-3">
+          <AnimateIn className="lg:col-span-3" from="right" delay={100}>
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
               Formulario
             </p>
@@ -109,13 +112,13 @@ export default function ContactoPage() {
               Envíanos un mensaje
             </h2>
             <ContactForm />
-          </div>
+          </AnimateIn>
         </div>
       </section>
 
       {/* FAQ promo */}
       <section className="border-t border-border bg-secondary/5 py-16">
-        <div className="mx-auto max-w-3xl px-4 text-center">
+        <AnimateIn className="mx-auto max-w-3xl px-4 text-center">
           <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
             Respuestas rápidas
           </p>
@@ -132,7 +135,7 @@ export default function ContactoPage() {
           >
             Ver preguntas frecuentes →
           </a>
-        </div>
+        </AnimateIn>
       </section>
     </div>
   );

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AnimateIn } from "@/components/ui/animate-in";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -63,7 +64,7 @@ const faqs = [
       },
       {
         q: "¿Tienen productos para principiantes?",
-        a: "Sí. Contamos con suplementos para todos los niveles, desde personas que inician hasta atletas de alto rendimiento. Filtrar por nivel en nuestro catálogo o pregúntanos directamente.",
+        a: "Sí. Contamos con suplementos para todos los niveles, desde personas que inician hasta atletas de alto rendimiento. Filtra por nivel en nuestro catálogo o pregúntanos directamente.",
       },
     ],
   },
@@ -101,11 +102,11 @@ export default function FaqPage() {
         />
         <div className="absolute right-0 bottom-0 h-96 w-96 rounded-full bg-primary/20 blur-[100px]" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="mb-4 inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.4em] text-primary">
+          <p className="animate-in fade-in slide-in-from-bottom-4 fill-mode-both duration-700 mb-4 inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.4em] text-primary">
             <span className="inline-block h-px w-10 bg-primary" />
             Resolvemos tus dudas
           </p>
-          <h1 className="max-w-3xl text-7xl font-black uppercase leading-none tracking-tight text-white sm:text-9xl">
+          <h1 className="animate-in fade-in slide-in-from-bottom-8 fill-mode-both delay-150 duration-700 max-w-3xl text-7xl font-black uppercase leading-none tracking-tight text-white sm:text-9xl">
             PREGUN-
             <br />
             <span className="text-primary">TAS</span>
@@ -116,20 +117,23 @@ export default function FaqPage() {
       {/* FAQ */}
       <section className="mx-auto max-w-4xl px-4 py-24 sm:px-6 lg:px-8">
         <div className="space-y-16">
-          {faqs.map((section) => (
-            <div key={section.category}>
+          {faqs.map((section, si) => (
+            <AnimateIn key={section.category} delay={si * 80}>
               <h2 className="mb-8 border-b border-border pb-4 text-xs font-bold uppercase tracking-[0.3em] text-primary">
                 {section.category}
               </h2>
               <div className="space-y-px">
-                {section.items.map((item) => (
+                {section.items.map((item, ii) => (
                   <details
                     key={item.q}
                     className="group border border-border"
+                    style={{
+                      animationDelay: `${ii * 60}ms`,
+                    }}
                   >
                     <summary className="flex cursor-pointer items-center justify-between gap-4 px-6 py-5 font-bold uppercase tracking-wide transition-colors hover:text-primary [&::-webkit-details-marker]:hidden">
                       <span>{item.q}</span>
-                      <span className="shrink-0 text-xl font-black text-primary transition-transform group-open:rotate-45">
+                      <span className="shrink-0 text-xl font-black text-primary transition-transform duration-300 group-open:rotate-45">
                         +
                       </span>
                     </summary>
@@ -141,14 +145,14 @@ export default function FaqPage() {
                   </details>
                 ))}
               </div>
-            </div>
+            </AnimateIn>
           ))}
         </div>
       </section>
 
       {/* Contact CTA */}
       <section className="bg-secondary py-20 text-center">
-        <div className="mx-auto max-w-2xl px-4">
+        <AnimateIn className="mx-auto max-w-2xl px-4">
           <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
             ¿Aún tienes dudas?
           </p>
@@ -164,7 +168,7 @@ export default function FaqPage() {
           >
             Contáctanos
           </Link>
-        </div>
+        </AnimateIn>
       </section>
     </div>
   );

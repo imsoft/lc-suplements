@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { ProductCard } from "@/components/store/product-card";
 import { ProductFilters } from "@/components/store/product-filters";
+import { AnimateIn } from "@/components/ui/animate-in";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -74,14 +75,14 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-6 flex items-center justify-between">
+      <AnimateIn className="mb-6 flex items-center justify-between">
         <h1 className="text-2xl font-bold tracking-tight">
           {params.q ? `Resultados para "${params.q}"` : "Todos los productos"}
         </h1>
         <span className="text-sm text-muted-foreground">
           {products.length} producto{products.length !== 1 ? "s" : ""}
         </span>
-      </div>
+      </AnimateIn>
 
       <div className="flex flex-col gap-6 lg:flex-row">
         <ProductFilters
@@ -99,14 +100,15 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {products.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={{
-                    ...product,
-                    variants: product.variants.map((v) => ({ price: Number(v.price) })),
-                  }}
-                />
+              {products.map((product, i) => (
+                <AnimateIn key={product.id} delay={i * 50}>
+                  <ProductCard
+                    product={{
+                      ...product,
+                      variants: product.variants.map((v) => ({ price: Number(v.price) })),
+                    }}
+                  />
+                </AnimateIn>
               ))}
             </div>
           )}

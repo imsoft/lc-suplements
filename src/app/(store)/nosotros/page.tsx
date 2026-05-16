@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { AnimateIn } from "@/components/ui/animate-in";
+import { CountUp } from "@/components/ui/count-up";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -23,11 +25,11 @@ export default function NosotrosPage() {
         />
         <div className="absolute right-0 top-0 h-96 w-96 rounded-full bg-primary/20 blur-[100px]" />
         <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="mb-4 inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.4em] text-primary">
+          <p className="animate-in fade-in slide-in-from-bottom-4 fill-mode-both duration-700 mb-4 inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.4em] text-primary">
             <span className="inline-block h-px w-10 bg-primary" />
             Quiénes somos
           </p>
-          <h1 className="max-w-3xl text-7xl font-black uppercase leading-none tracking-tight sm:text-9xl">
+          <h1 className="animate-in fade-in slide-in-from-bottom-8 fill-mode-both delay-150 duration-700 max-w-3xl text-7xl font-black uppercase leading-none tracking-tight sm:text-9xl">
             NUESTRA
             <br />
             <span className="text-primary">HISTORIA</span>
@@ -38,7 +40,7 @@ export default function NosotrosPage() {
       {/* Story */}
       <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6 lg:px-8">
         <div className="grid items-center gap-16 lg:grid-cols-2">
-          <div>
+          <AnimateIn from="left">
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
               El origen
             </p>
@@ -58,49 +60,55 @@ export default function NosotrosPage() {
               mejor, con garantía de autenticidad y el respaldo de un equipo que
               vive lo que vende.
             </p>
-          </div>
-          <div className="flex h-80 items-center justify-center bg-secondary">
-            <p className="text-8xl">💪</p>
-          </div>
+          </AnimateIn>
+          <AnimateIn from="right" delay={150}>
+            <div className="flex h-80 items-center justify-center bg-secondary">
+              <p className="text-8xl">💪</p>
+            </div>
+          </AnimateIn>
         </div>
       </section>
 
       {/* Mission & Vision */}
       <section className="bg-secondary/5 py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 text-center">
+          <AnimateIn className="mb-16 text-center">
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
               Lo que nos mueve
             </p>
             <h2 className="text-5xl font-black uppercase tracking-tight">
               Misión y visión
             </h2>
-          </div>
+          </AnimateIn>
           <div className="grid gap-6 sm:grid-cols-2">
-            <div className="border border-border p-10">
-              <p className="mb-6 text-5xl font-black text-primary/20">01</p>
-              <h3 className="mb-4 text-xl font-black uppercase tracking-wider">
-                Misión
-              </h3>
-              <p className="leading-relaxed text-muted-foreground">
-                Llevar suplementos deportivos de la más alta calidad a cada
-                atleta en México, con precios justos, asesoría honesta y envíos
-                rápidos. Queremos ser el aliado número uno en tu camino hacia
-                tus metas.
-              </p>
-            </div>
-            <div className="border border-transparent bg-secondary p-10 text-secondary-foreground">
-              <p className="mb-6 text-5xl font-black text-primary/40">02</p>
-              <h3 className="mb-4 text-xl font-black uppercase tracking-wider">
-                Visión
-              </h3>
-              <p className="leading-relaxed text-white/60">
-                Convertirnos en la tienda de suplementos más confiable de
-                México, reconocida por la calidad de sus productos, la
-                excelencia en el servicio y el impacto positivo en la comunidad
-                fitness nacional.
-              </p>
-            </div>
+            <AnimateIn delay={0}>
+              <div className="border border-border p-10 h-full">
+                <p className="mb-6 text-5xl font-black text-primary/20">01</p>
+                <h3 className="mb-4 text-xl font-black uppercase tracking-wider">
+                  Misión
+                </h3>
+                <p className="leading-relaxed text-muted-foreground">
+                  Llevar suplementos deportivos de la más alta calidad a cada
+                  atleta en México, con precios justos, asesoría honesta y envíos
+                  rápidos. Queremos ser el aliado número uno en tu camino hacia
+                  tus metas.
+                </p>
+              </div>
+            </AnimateIn>
+            <AnimateIn delay={150}>
+              <div className="border border-transparent bg-secondary p-10 text-secondary-foreground h-full">
+                <p className="mb-6 text-5xl font-black text-primary/40">02</p>
+                <h3 className="mb-4 text-xl font-black uppercase tracking-wider">
+                  Visión
+                </h3>
+                <p className="leading-relaxed text-white/60">
+                  Convertirnos en la tienda de suplementos más confiable de
+                  México, reconocida por la calidad de sus productos, la
+                  excelencia en el servicio y el impacto positivo en la comunidad
+                  fitness nacional.
+                </p>
+              </div>
+            </AnimateIn>
           </div>
         </div>
       </section>
@@ -108,14 +116,14 @@ export default function NosotrosPage() {
       {/* Values */}
       <section className="py-24">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-16">
+          <AnimateIn className="mb-16">
             <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
               Cómo trabajamos
             </p>
             <h2 className="text-5xl font-black uppercase tracking-tight">
               Nuestros valores
             </h2>
-          </div>
+          </AnimateIn>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
             {[
               {
@@ -138,18 +146,20 @@ export default function NosotrosPage() {
                 title: "Comunidad",
                 desc: "Somos parte de la familia fitness mexicana. Tu éxito es nuestro éxito.",
               },
-            ].map((val) => (
-              <div key={val.num} className="border-t-2 border-primary pt-8">
-                <p className="mb-4 text-4xl font-black text-primary/20">
-                  {val.num}
-                </p>
-                <h3 className="mb-3 font-black uppercase tracking-wider">
-                  {val.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  {val.desc}
-                </p>
-              </div>
+            ].map((val, i) => (
+              <AnimateIn key={val.num} delay={i * 100}>
+                <div className="border-t-2 border-primary pt-8">
+                  <p className="mb-4 text-4xl font-black text-primary/20">
+                    {val.num}
+                  </p>
+                  <h3 className="mb-3 font-black uppercase tracking-wider">
+                    {val.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-muted-foreground">
+                    {val.desc}
+                  </p>
+                </div>
+              </AnimateIn>
             ))}
           </div>
         </div>
@@ -160,17 +170,23 @@ export default function NosotrosPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 gap-8 sm:grid-cols-4">
             {[
-              { value: "2020", label: "Año de fundación" },
-              { value: "+10K", label: "Clientes satisfechos" },
-              { value: "+500", label: "Productos disponibles" },
-              { value: "5★", label: "Valoración promedio" },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <p className="text-4xl font-black text-primary">{stat.value}</p>
+              { end: 2020, duration: 1500, prefix: "", suffix: "", label: "Año de fundación" },
+              { end: 10, duration: 2000, prefix: "+", suffix: "K", label: "Clientes satisfechos" },
+              { end: 500, duration: 2000, prefix: "+", suffix: "", label: "Productos disponibles" },
+              { end: 5, duration: 1200, prefix: "", suffix: "★", label: "Valoración promedio" },
+            ].map((stat, i) => (
+              <AnimateIn key={stat.label} className="text-center" delay={i * 100}>
+                <CountUp
+                  end={stat.end}
+                  duration={stat.duration}
+                  prefix={stat.prefix}
+                  suffix={stat.suffix}
+                  className="text-4xl font-black text-primary"
+                />
                 <p className="mt-1 text-xs font-bold uppercase tracking-[0.25em] text-muted-foreground">
                   {stat.label}
                 </p>
-              </div>
+              </AnimateIn>
             ))}
           </div>
         </div>
@@ -178,7 +194,7 @@ export default function NosotrosPage() {
 
       {/* CTA */}
       <section className="bg-secondary py-24 text-center">
-        <div className="mx-auto max-w-2xl px-4">
+        <AnimateIn className="mx-auto max-w-2xl px-4">
           <h2 className="text-5xl font-black uppercase tracking-tight text-secondary-foreground">
             ¿Listo para{" "}
             <span className="text-primary">empezar?</span>
@@ -204,7 +220,7 @@ export default function NosotrosPage() {
               <Link href="/contacto">Contactarnos</Link>
             </Button>
           </div>
-        </div>
+        </AnimateIn>
       </section>
     </div>
   );
