@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
+import { SiteLogo } from "@/components/brand/site-logo";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export function LoginForm() {
   const router = useRouter();
@@ -37,6 +39,9 @@ export function LoginForm() {
 
   return (
     <div className="w-full max-w-sm">
+      <div className="mb-6 flex justify-center">
+        <SiteLogo variant="horizontal" tone="adaptive" />
+      </div>
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-bold tracking-tight">Iniciar sesión</h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -78,14 +83,14 @@ export function LoginForm() {
               ¿Olvidaste tu contraseña?
             </Link>
           </div>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             required
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
             placeholder="••••••••"
+            disabled={loading}
+            autoComplete="current-password"
           />
         </div>
 

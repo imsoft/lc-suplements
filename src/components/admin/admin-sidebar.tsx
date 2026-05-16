@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { HugeiconsIcon } from "@hugeicons/react";
+import { SiteLogo } from "@/components/brand/site-logo";
 import {
   DashboardSquare01Icon,
   Package01Icon,
@@ -34,7 +35,12 @@ export function AdminSidebar({ mobileOpen, onClose }: AdminSidebarProps) {
   const sidebarContent = (
     <aside className="flex h-full w-60 flex-col border-r border-border bg-secondary">
       <div className="flex h-16 items-center justify-between border-b border-border px-6">
-        <span className="font-bold tracking-widest text-primary uppercase">LC Admin</span>
+        <SiteLogo
+          variant="horizontal"
+          tone="dark"
+          href="/"
+          className="h-8 max-w-[140px]"
+        />
         {onClose && (
           <button onClick={onClose} className="text-muted-foreground hover:text-foreground lg:hidden">
             <HugeiconsIcon icon={Cancel01Icon} size={20} />

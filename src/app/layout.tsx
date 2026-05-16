@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Oswald, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { LOGOS } from "@/lib/logos";
 
 const fontSans = Oswald({
   subsets: ["latin"],
@@ -52,6 +53,10 @@ export const metadata: Metadata = {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true },
+  },
+  icons: {
+    icon: [{ url: LOGOS.markPng, type: "image/png" }],
+    apple: LOGOS.markPng,
   },
 };
 

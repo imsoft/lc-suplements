@@ -14,6 +14,7 @@ import {
 } from "@hugeicons/core-free-icons";
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { SiteLogo } from "@/components/brand/site-logo";
 
 const NAV_LINKS = [
   { href: "/products", label: "Productos" },
@@ -73,11 +74,7 @@ export function Header() {
 
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <span className="text-xl font-bold tracking-widest text-primary uppercase">
-            LC Suplements
-          </span>
-        </Link>
+        <SiteLogo variant="horizontal" tone="adaptive" priority />
 
         {/* Nav desktop */}
         <nav className="hidden items-center gap-6 md:flex">

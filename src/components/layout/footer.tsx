@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SiteLogo } from "@/components/brand/site-logo";
 
 export function Footer() {
   return (
@@ -6,9 +7,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 md:grid-cols-4">
           <div className="md:col-span-1">
-            <span className="text-lg font-bold tracking-widest text-primary uppercase">
-              LC Suplements
-            </span>
+            <SiteLogo variant="horizontal" tone="dark" className="h-10 max-w-[200px]" />
             <p className="mt-3 text-sm text-muted-foreground">
               Tu tienda de confianza para suplementos alimenticios, proteínas,
               creatinas y vitaminas de la más alta calidad.

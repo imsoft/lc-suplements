@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
+import { SiteLogo } from "@/components/brand/site-logo";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
@@ -34,6 +35,9 @@ export function ForgotPasswordForm() {
   if (sent) {
     return (
       <div className="w-full max-w-sm text-center">
+        <div className="mb-6 flex justify-center">
+          <SiteLogo variant="horizontal" tone="adaptive" />
+        </div>
         <div className="mb-4 text-4xl">✉️</div>
         <h1 className="mb-2 text-2xl font-bold tracking-tight">Revisa tu correo</h1>
         <p className="text-sm text-muted-foreground">
@@ -49,6 +53,9 @@ export function ForgotPasswordForm() {
 
   return (
     <div className="w-full max-w-sm">
+      <div className="mb-6 flex justify-center">
+        <SiteLogo variant="horizontal" tone="adaptive" />
+      </div>
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-bold tracking-tight">¿Olvidaste tu contraseña?</h1>
         <p className="mt-2 text-sm text-muted-foreground">

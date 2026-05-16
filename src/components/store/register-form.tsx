@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
+import { SiteLogo } from "@/components/brand/site-logo";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export function RegisterForm() {
   const router = useRouter();
@@ -33,6 +35,9 @@ export function RegisterForm() {
 
   return (
     <div className="w-full max-w-sm">
+      <div className="mb-6 flex justify-center">
+        <SiteLogo variant="horizontal" tone="adaptive" />
+      </div>
       <div className="mb-8 text-center">
         <h1 className="text-2xl font-bold tracking-tight">Crear cuenta</h1>
         <p className="mt-2 text-sm text-muted-foreground">
@@ -78,15 +83,15 @@ export function RegisterForm() {
           <label htmlFor="password" className="text-sm font-medium">
             Contraseña
           </label>
-          <input
+          <PasswordInput
             id="password"
-            type="password"
             required
             minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full rounded border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary"
             placeholder="Mínimo 8 caracteres"
+            disabled={loading}
+            autoComplete="new-password"
           />
         </div>
 

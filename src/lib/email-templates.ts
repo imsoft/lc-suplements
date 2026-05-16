@@ -1,3 +1,15 @@
+import { LOGOS } from "@/lib/logos";
+
+const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? "https://lcsuplements.com").replace(
+  /\/$/,
+  "",
+);
+
+function emailHeaderLogo(): string {
+  const src = `${APP_URL}${LOGOS.emailHeaderPng}`;
+  return `<img src="${src}" alt="LC Suplements" width="220" height="56" style="display:block;margin:0 auto;height:auto;max-width:220px;border:0;outline:none" />`;
+}
+
 const BASE = `
   body, html { margin:0; padding:0; background:#0a0a0a; }
   * { box-sizing:border-box; }
@@ -20,9 +32,7 @@ function wrapper(content: string): string {
           <!-- Header -->
           <tr>
             <td style="padding:0 0 32px 0;text-align:center">
-              <span style="font-family:'Arial Black',Arial,sans-serif;font-size:22px;font-weight:900;letter-spacing:6px;color:#c9a84c;text-transform:uppercase">
-                LC SUPLEMENTS
-              </span>
+              ${emailHeaderLogo()}
             </td>
           </tr>
 

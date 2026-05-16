@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { SiteLogo } from "@/components/brand/site-logo";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 export default function NotFound() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-6 px-4 text-center">
+      <SiteLogo variant="horizontal" tone="adaptive" className="max-w-[240px]" />
       <p className="text-7xl font-bold text-primary">404</p>
       <h1 className="text-2xl font-bold tracking-tight">Página no encontrada</h1>
       <p className="max-w-sm text-muted-foreground">
