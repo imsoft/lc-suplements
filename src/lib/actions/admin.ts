@@ -61,16 +61,18 @@ export async function createProduct(formData: FormData) {
     });
   }
 
-  // Handle images (base64 or URL)
-  const imageFiles = formData.getAll("images") as File[];
+  // Handle images — max 6, organized by product slug
+  const imageFiles = (formData.getAll("images") as File[])
+    .filter((f) => f && f.size > 0)
+    .slice(0, 6);
+
   for (let i = 0; i < imageFiles.length; i++) {
     const file = imageFiles[i];
-    if (!file || file.size === 0) continue;
     const buffer = await file.arrayBuffer();
     const base64 = `data:${file.type};base64,${Buffer.from(buffer).toString("base64")}`;
-    const { url, publicId } = await uploadProductImage(base64);
+    const { url, publicId } = await uploadProductImage(base64, slug);
     await db.productImage.create({
-      data: { productId: product.id, url, publicId, isPrimary: i === 0 },
+      data: { productId: product.id, url, publicId, isPrimary: i === 0, sortOrder: i },
     });
   }
 

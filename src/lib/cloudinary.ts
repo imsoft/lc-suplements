@@ -6,12 +6,9 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export async function uploadProductImage(
-  file: string,
-  folder = "lc-suplements/products"
-) {
+export async function uploadProductImage(file: string, productSlug: string) {
   const result = await cloudinary.uploader.upload(file, {
-    folder,
+    folder: `lc-suplements/products/${productSlug}`,
     transformation: [{ quality: "auto", fetch_format: "auto" }],
   });
   return { url: result.secure_url, publicId: result.public_id };

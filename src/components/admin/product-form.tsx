@@ -38,6 +38,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
   const [variants, setVariants] = useState<Variant[]>(
     product?.variants ?? [{ name: "Presentación", value: "", price: "", stock: 0 }]
   );
+  const MAX_IMAGES = 6;
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -58,8 +59,16 @@ export function ProductForm({ categories, product }: ProductFormProps) {
   const addFiles = useCallback((files: File[]) => {
     const imageFiles = files.filter((f) => f.type.startsWith("image/"));
     if (!imageFiles.length) return;
-    setImages((prev) => [...prev, ...imageFiles]);
-    setPreviews((prev) => [...prev, ...imageFiles.map((f) => URL.createObjectURL(f))]);
+    setImages((prev) => {
+      const slots = MAX_IMAGES - prev.length;
+      if (slots <= 0) return prev;
+      return [...prev, ...imageFiles.slice(0, slots)];
+    });
+    setPreviews((prev) => {
+      const slots = MAX_IMAGES - prev.length;
+      if (slots <= 0) return prev;
+      return [...prev, ...imageFiles.slice(0, slots).map((f) => URL.createObjectURL(f))];
+    });
   }, []);
 
   function removeImage(i: number) {
@@ -216,21 +225,28 @@ export function ProductForm({ categories, product }: ProductFormProps) {
 
         {!product && (
           <section className="rounded border border-border p-5 space-y-4">
-            <div>
-              <h2 className="font-semibold">Imágenes</h2>
-              <p className="text-xs text-muted-foreground mt-0.5">La primera imagen agregada será la principal.</p>
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="font-semibold">Imágenes</h2>
+                <p className="text-xs text-muted-foreground mt-0.5">La primera imagen agregada será la principal.</p>
+              </div>
+              <span className={`text-xs font-medium tabular-nums ${images.length >= MAX_IMAGES ? "text-destructive" : "text-muted-foreground"}`}>
+                {images.length} / {MAX_IMAGES}
+              </span>
             </div>
 
             {/* Dropzone */}
             <div
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              onClick={() => fileInputRef.current?.click()}
-              className={`cursor-pointer select-none rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors ${
-                isDragging
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/60 hover:bg-muted/30"
+              onDragOver={images.length < MAX_IMAGES ? handleDragOver : undefined}
+              onDragLeave={images.length < MAX_IMAGES ? handleDragLeave : undefined}
+              onDrop={images.length < MAX_IMAGES ? handleDrop : undefined}
+              onClick={() => images.length < MAX_IMAGES && fileInputRef.current?.click()}
+              className={`select-none rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors ${
+                images.length >= MAX_IMAGES
+                  ? "cursor-not-allowed border-border opacity-50"
+                  : isDragging
+                  ? "cursor-pointer border-primary bg-primary/5"
+                  : "cursor-pointer border-border hover:border-primary/60 hover:bg-muted/30"
               }`}
             >
               <div className="flex flex-col items-center gap-3 pointer-events-none">
@@ -246,13 +262,19 @@ export function ProductForm({ categories, product }: ProductFormProps) {
                 </svg>
                 <div>
                   <p className="text-sm font-medium">
-                    {isDragging ? "Suelta las imágenes aquí" : "Arrastra imágenes aquí"}
+                    {images.length >= MAX_IMAGES
+                      ? "Límite de imágenes alcanzado"
+                      : isDragging
+                      ? "Suelta las imágenes aquí"
+                      : "Arrastra imágenes aquí"}
                   </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    o <span className="text-primary underline underline-offset-2">haz clic para seleccionar</span>
-                  </p>
+                  {images.length < MAX_IMAGES && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      o <span className="text-primary underline underline-offset-2">haz clic para seleccionar</span>
+                    </p>
+                  )}
                 </div>
-                <p className="text-xs text-muted-foreground">PNG, JPG, WEBP · Múltiples archivos</p>
+                <p className="text-xs text-muted-foreground">PNG, JPG, WEBP · Máximo {MAX_IMAGES} imágenes</p>
               </div>
             </div>
 
