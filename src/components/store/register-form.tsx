@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { signUp } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { SiteLogo } from "@/components/brand/site-logo";
 import { PasswordInput } from "@/components/ui/password-input";
 
 export function RegisterForm() {
-  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,8 +27,7 @@ export function RegisterForm() {
       return;
     }
 
-    router.push("/");
-    router.refresh();
+    window.location.href = "/";
   }
 
   return (

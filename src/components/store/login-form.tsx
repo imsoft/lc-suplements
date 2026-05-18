@@ -2,14 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { signIn } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { SiteLogo } from "@/components/brand/site-logo";
 import { PasswordInput } from "@/components/ui/password-input";
 
 export function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const raw = searchParams.get("callbackUrl") ?? "/";
   const callbackUrl = raw.startsWith("/") && !raw.startsWith("//") ? raw : "/";
@@ -33,8 +32,7 @@ export function LoginForm() {
       return;
     }
 
-    router.push(callbackUrl);
-    router.refresh();
+    window.location.href = callbackUrl;
   }
 
   return (

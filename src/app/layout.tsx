@@ -3,6 +3,7 @@ import { Oswald, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { LOGOS } from "@/lib/logos";
+import { AuthProvider } from "@/components/providers/auth-provider";
 
 const fontSans = Oswald({
   subsets: ["latin"],
@@ -77,7 +78,7 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        {children}
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );

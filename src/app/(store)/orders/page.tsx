@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Mis pedidos | LC Suplements" };
 
 export default async function OrdersPage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/auth/login?callbackUrl=/orders");
 
   const orders = await db.order.findMany({
     where: { userId: session.user.id },
