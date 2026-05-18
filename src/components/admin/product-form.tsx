@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createProduct, updateProduct } from "@/lib/actions/admin";
@@ -38,6 +38,10 @@ export function ProductForm({ categories, product }: ProductFormProps) {
   const [variants, setVariants] = useState<Variant[]>(
     product?.variants ?? [{ name: "Presentación", value: "", price: "", stock: 0 }]
   );
+  const [images, setImages] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   function addVariant() {
     setVariants((prev) => [...prev, { name: prev[0]?.name ?? "Sabor", value: "", price: "", stock: 0 }]);
@@ -51,6 +55,39 @@ export function ProductForm({ categories, product }: ProductFormProps) {
     setVariants((prev) => prev.map((v, idx) => (idx === i ? { ...v, [field]: value } : v)));
   }
 
+  const addFiles = useCallback((files: File[]) => {
+    const imageFiles = files.filter((f) => f.type.startsWith("image/"));
+    if (!imageFiles.length) return;
+    setImages((prev) => [...prev, ...imageFiles]);
+    setPreviews((prev) => [...prev, ...imageFiles.map((f) => URL.createObjectURL(f))]);
+  }, []);
+
+  function removeImage(i: number) {
+    URL.revokeObjectURL(previews[i]);
+    setImages((prev) => prev.filter((_, idx) => idx !== i));
+    setPreviews((prev) => prev.filter((_, idx) => idx !== i));
+  }
+
+  function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files) addFiles(Array.from(e.target.files));
+    e.target.value = "";
+  }
+
+  function handleDragOver(e: React.DragEvent) {
+    e.preventDefault();
+    setIsDragging(true);
+  }
+
+  function handleDragLeave(e: React.DragEvent) {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false);
+  }
+
+  function handleDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setIsDragging(false);
+    addFiles(Array.from(e.dataTransfer.files));
+  }
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -61,6 +98,8 @@ export function ProductForm({ categories, product }: ProductFormProps) {
       formData.append("variantPrice", String(v.price));
       formData.append("variantStock", String(v.stock));
     });
+
+    images.forEach((img) => formData.append("images", img));
 
     startTransition(async () => {
       if (product) {
@@ -176,16 +215,86 @@ export function ProductForm({ categories, product }: ProductFormProps) {
         </section>
 
         {!product && (
-          <section className="rounded border border-border p-5 space-y-3">
-            <h2 className="font-semibold">Imágenes</h2>
-            <p className="text-xs text-muted-foreground">La primera imagen será la principal.</p>
+          <section className="rounded border border-border p-5 space-y-4">
+            <div>
+              <h2 className="font-semibold">Imágenes</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">La primera imagen agregada será la principal.</p>
+            </div>
+
+            {/* Dropzone */}
+            <div
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className={`cursor-pointer select-none rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors ${
+                isDragging
+                  ? "border-primary bg-primary/5"
+                  : "border-border hover:border-primary/60 hover:bg-muted/30"
+              }`}
+            >
+              <div className="flex flex-col items-center gap-3 pointer-events-none">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className={`h-10 w-10 transition-colors ${isDragging ? "text-primary" : "text-muted-foreground"}`}
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={1.5}
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                </svg>
+                <div>
+                  <p className="text-sm font-medium">
+                    {isDragging ? "Suelta las imágenes aquí" : "Arrastra imágenes aquí"}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    o <span className="text-primary underline underline-offset-2">haz clic para seleccionar</span>
+                  </p>
+                </div>
+                <p className="text-xs text-muted-foreground">PNG, JPG, WEBP · Múltiples archivos</p>
+              </div>
+            </div>
+
             <input
+              ref={fileInputRef}
               type="file"
-              name="images"
               multiple
               accept="image/*"
-              className="text-sm"
+              className="hidden"
+              onChange={handleFileInput}
             />
+
+            {/* Thumbnails */}
+            {images.length > 0 && (
+              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4">
+                {images.map((file, i) => (
+                  <div key={i} className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-muted">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={previews[i]}
+                      alt={file.name}
+                      className="h-full w-full object-cover"
+                    />
+                    {i === 0 && (
+                      <span className="absolute left-1.5 top-1.5 rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                        Principal
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); removeImage(i); }}
+                      className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-background/80 text-xs font-bold text-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
+                    >
+                      ×
+                    </button>
+                    <div className="absolute inset-x-0 bottom-0 bg-background/70 px-1.5 py-1 opacity-0 transition-opacity group-hover:opacity-100">
+                      <p className="truncate text-[10px] text-foreground">{file.name}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </section>
         )}
       </div>
