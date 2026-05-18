@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { db } from "@/lib/db";
 import { AdminProductActions } from "@/components/admin/admin-product-actions";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,7 @@ export default async function AdminProductsPage() {
         <table className="w-full text-sm">
           <thead className="border-b border-border bg-muted/50">
             <tr>
+              <th className="px-4 py-3 text-left font-medium text-muted-foreground">Imagen</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Producto</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Categoría</th>
               <th className="px-4 py-3 text-left font-medium text-muted-foreground">Precio desde</th>
@@ -41,6 +43,21 @@ export default async function AdminProductsPage() {
           <tbody className="divide-y divide-border">
             {products.map((product) => (
               <tr key={product.id} className="hover:bg-muted/30">
+                <td className="px-4 py-3">
+                  {product.images[0] ? (
+                    <Image
+                      src={product.images[0].url}
+                      alt={product.name}
+                      width={48}
+                      height={48}
+                      className="h-12 w-12 rounded object-cover border border-border"
+                    />
+                  ) : (
+                    <div className="h-12 w-12 rounded border border-border bg-muted flex items-center justify-center text-muted-foreground text-xs">
+                      Sin foto
+                    </div>
+                  )}
+                </td>
                 <td className="px-4 py-3">
                   <p className="font-medium">{product.name}</p>
                   {product.brand && (
