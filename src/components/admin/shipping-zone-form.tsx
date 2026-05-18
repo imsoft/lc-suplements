@@ -1,16 +1,17 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { saveShippingZone } from "@/lib/actions/admin";
 
 export function ShippingZoneForm() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [cost, setCost] = useState("");
   const [freeThreshold, setFreeThreshold] = useState("");
   const [statesInput, setStatesInput] = useState("");
   const [isPending, startTransition] = useTransition();
-  const [success, setSuccess] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -26,12 +27,7 @@ export function ShippingZoneForm() {
         cost: parseFloat(cost),
         freeThreshold: freeThreshold ? parseFloat(freeThreshold) : undefined,
       });
-      setName("");
-      setCost("");
-      setFreeThreshold("");
-      setStatesInput("");
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      router.push("/admin/shipping");
     });
   }
 
@@ -58,8 +54,12 @@ export function ShippingZoneForm() {
           <input type="number" step="0.01" min="0" value={freeThreshold} onChange={(e) => setFreeThreshold(e.target.value)} className={inputClass} placeholder="999.00" />
         </div>
       </div>
-      {success && <p className="text-sm text-green-600">¡Zona guardada!</p>}
-      <Button type="submit" disabled={isPending}>{isPending ? "Guardando..." : "Guardar zona"}</Button>
+      <div className="flex gap-3">
+        <Button type="submit" disabled={isPending}>{isPending ? "Guardando..." : "Guardar zona"}</Button>
+        <Button type="button" variant="outline" onClick={() => router.push("/admin/shipping")}>
+          Cancelar
+        </Button>
+      </div>
     </form>
   );
 }

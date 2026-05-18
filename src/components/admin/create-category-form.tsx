@@ -1,25 +1,22 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createCategory } from "@/lib/actions/admin";
 
 export function CreateCategoryForm({ categories }: { categories: { id: string; name: string }[] }) {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [parentId, setParentId] = useState("");
   const [isPending, startTransition] = useTransition();
-  const [success, setSuccess] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     startTransition(async () => {
       await createCategory({ name, description, parentId: parentId || undefined });
-      setName("");
-      setDescription("");
-      setParentId("");
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 3000);
+      router.push("/admin/categories");
     });
   }
 
@@ -45,8 +42,12 @@ export function CreateCategoryForm({ categories }: { categories: { id: string; n
           ))}
         </select>
       </div>
-      {success && <p className="text-sm text-green-600">¡Categoría creada!</p>}
-      <Button type="submit" disabled={isPending}>{isPending ? "Creando..." : "Crear categoría"}</Button>
+      <div className="flex gap-3">
+        <Button type="submit" disabled={isPending}>{isPending ? "Creando..." : "Crear categoría"}</Button>
+        <Button type="button" variant="outline" onClick={() => router.push("/admin/categories")}>
+          Cancelar
+        </Button>
+      </div>
     </form>
   );
 }
