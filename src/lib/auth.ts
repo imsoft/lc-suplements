@@ -1,6 +1,5 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "@better-auth/prisma-adapter";
-import { nextCookies } from "better-auth/next-js";
 import { dash } from "@better-auth/infra";
 import { Resend } from "resend";
 import { db } from "@/lib/db";
@@ -38,7 +37,6 @@ export const auth = betterAuth({
     },
   },
   plugins: [
-    nextCookies(),
     ...(process.env.BETTER_AUTH_API_KEY
       ? [dash({ apiKey: process.env.BETTER_AUTH_API_KEY })]
       : []),

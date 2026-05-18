@@ -4,13 +4,18 @@ const PROTECTED_STORE = ["/orders", "/wishlist", "/account", "/checkout"];
 const PROTECTED_ADMIN = ["/admin"];
 const AUTH_ROUTES = ["/auth/login", "/auth/register"];
 
-// Cookie name: prefix.session_token (default prefix = "better-auth")
-const SESSION_COOKIE = "better-auth.session_token";
+// Better Auth usa el prefijo __Secure- en producción HTTPS
+function hasSessionCookie(request: NextRequest) {
+  return (
+    request.cookies.has("better-auth.session_token") ||
+    request.cookies.has("__Secure-better-auth.session_token")
+  );
+}
 
-export function proxy(request: NextRequest) {
+export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  const hasSession = request.cookies.has(SESSION_COOKIE);
+  const hasSession = hasSessionCookie(request);
 
   const isAuthRoute = AUTH_ROUTES.some((r) => pathname.startsWith(r));
   const isProtectedStore = PROTECTED_STORE.some((r) => pathname.startsWith(r));
@@ -29,7 +34,6 @@ export function proxy(request: NextRequest) {
   }
 
   // Rutas de admin → login si no hay sesión
-  // La validación del rol ADMIN la hace el layout/server action correspondiente
   if (isAdminRoute && !hasSession) {
     return NextResponse.redirect(new URL("/auth/login", request.url));
   }
