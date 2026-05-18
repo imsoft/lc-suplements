@@ -51,7 +51,7 @@ export function LoginForm() {
       </div>
 
       {wasReset && (
-        <p className="mb-4 rounded bg-primary/10 px-3 py-2 text-sm text-primary">
+        <p className="mb-4 rounded bg-green-500/10 px-3 py-2 text-sm text-green-600 text-center">
           Contraseña actualizada. Ya puedes iniciar sesión.
         </p>
       )}
