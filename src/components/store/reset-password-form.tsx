@@ -28,7 +28,7 @@ export function ResetPasswordForm() {
         <p className="text-sm text-muted-foreground">
           Este enlace no es válido o ya expiró.
         </p>
-        <Link href="/auth/forgot-password" className="mt-6 inline-block text-sm text-primary hover:underline">
+        <Link href="/autenticacion/olvide-contrasena" className="mt-6 inline-block text-sm text-primary hover:underline">
           Solicitar un nuevo enlace
         </Link>
       </div>
@@ -60,7 +60,7 @@ export function ResetPasswordForm() {
       return;
     }
 
-    router.push("/auth/login?reset=1");
+    router.push("/autenticacion/iniciar-sesion?reset=1");
   }
 
   return (

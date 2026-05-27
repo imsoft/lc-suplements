@@ -42,7 +42,7 @@ export async function addToCart({
     await db.cartItem.create({ data: { cartId: cart.id, productId, variantId, quantity } });
   }
 
-  revalidatePath("/cart");
+  revalidatePath("/carrito");
   return { success: true };
 }
 
@@ -58,12 +58,12 @@ export async function updateCartItem({
   } else {
     await db.cartItem.update({ where: { id: itemId }, data: { quantity } });
   }
-  revalidatePath("/cart");
+  revalidatePath("/carrito");
   return { success: true };
 }
 
 export async function removeCartItem(itemId: string) {
   await db.cartItem.delete({ where: { id: itemId } });
-  revalidatePath("/cart");
+  revalidatePath("/carrito");
   return { success: true };
 }

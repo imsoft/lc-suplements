@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Mi cuenta | LC Suplements" };
 
 export default async function AccountPage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/auth/login?callbackUrl=/account");
+  if (!session) redirect("/autenticacion/iniciar-sesion?callbackUrl=/cuenta");
 
   const addresses = await db.address.findMany({
     where: { userId: session.user.id },

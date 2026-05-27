@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Mis pedidos | LC Suplements" };
 
 export default async function OrdersPage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/auth/login?callbackUrl=/orders");
+  if (!session) redirect("/autenticacion/iniciar-sesion?callbackUrl=/pedidos");
 
   const orders = await db.order.findMany({
     where: { userId: session.user.id },
@@ -28,7 +28,7 @@ export default async function OrdersPage() {
       {orders.length === 0 ? (
         <div className="flex flex-col items-center gap-4 py-16 text-center">
           <p className="text-muted-foreground">Aún no tienes pedidos.</p>
-          <Link href="/products" className="text-primary hover:underline text-sm">
+          <Link href="/productos" className="text-primary hover:underline text-sm">
             Ver productos →
           </Link>
         </div>
@@ -37,7 +37,7 @@ export default async function OrdersPage() {
           {orders.map((order) => (
             <Link
               key={order.id}
-              href={`/orders/${order.id}`}
+              href={`/pedidos/${order.id}`}
               className="block rounded border border-border p-5 transition-shadow hover:shadow-md"
             >
               <div className="flex flex-wrap items-start justify-between gap-2">

@@ -93,7 +93,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
       ? { "@type": "Brand", name: product.brand }
       : undefined,
     image: primaryImage?.url,
-    url: `${appUrl}/products/${product.slug}`,
+    url: `${appUrl}/productos/${product.slug}`,
     ...(lowestPrice !== null && {
       offers: {
         "@type": "AggregateOffer",

@@ -39,7 +39,7 @@ export function RegisterForm() {
         <h1 className="text-2xl font-bold tracking-tight">Crear cuenta</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           ¿Ya tienes cuenta?{" "}
-          <Link href="/auth/login" className="text-primary hover:underline">
+          <Link href="/autenticacion/iniciar-sesion" className="text-primary hover:underline">
             Inicia sesión
           </Link>
         </p>

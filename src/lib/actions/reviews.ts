@@ -28,6 +28,6 @@ export async function submitReview({
   });
 
   const product = await db.product.findUnique({ where: { id: productId }, select: { slug: true } });
-  revalidatePath(`/products/${product?.slug}`);
+  revalidatePath(`/productos/${product?.slug}`);
   return { success: true };
 }

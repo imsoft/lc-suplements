@@ -116,8 +116,8 @@ export async function createCheckout(data: CheckoutData) {
 
   // Los invitados van a /checkout/gracias, los usuarios a /orders/:id
   const successUrl = userId
-    ? `${appUrl}/orders/${order.id}?status=success`
-    : `${appUrl}/checkout/gracias?order=${order.id}`;
+    ? `${appUrl}/pedidos/${order.id}?status=success`
+    : `${appUrl}/pagar/gracias?order=${order.id}`;
 
   // ── MercadoPago ──────────────────────────────────────────────────────────
   const preference = await mpPreference.create({
@@ -137,7 +137,7 @@ export async function createCheckout(data: CheckoutData) {
       },
       back_urls: {
         success: successUrl,
-        failure: `${appUrl}/checkout?status=failure`,
+        failure: `${appUrl}/pagar?status=failure`,
         pending: successUrl,
       },
       auto_return: "approved",

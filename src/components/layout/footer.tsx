@@ -19,10 +19,10 @@ export function Footer() {
               Productos
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/products?category=proteinas" className="hover:text-primary">Proteínas</Link></li>
-              <li><Link href="/products?category=creatinas" className="hover:text-primary">Creatinas</Link></li>
-              <li><Link href="/products?category=vitaminas" className="hover:text-primary">Vitaminas</Link></li>
-              <li><Link href="/products?category=pre-workout" className="hover:text-primary">Pre-Workout</Link></li>
+              <li><Link href="/productos?category=proteinas" className="hover:text-primary">Proteínas</Link></li>
+              <li><Link href="/productos?category=creatinas" className="hover:text-primary">Creatinas</Link></li>
+              <li><Link href="/productos?category=vitaminas" className="hover:text-primary">Vitaminas</Link></li>
+              <li><Link href="/productos?category=pre-workout" className="hover:text-primary">Pre-Workout</Link></li>
             </ul>
           </div>
 
@@ -31,9 +31,9 @@ export function Footer() {
               Mi cuenta
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/account" className="hover:text-primary">Perfil</Link></li>
-              <li><Link href="/orders" className="hover:text-primary">Mis pedidos</Link></li>
-              <li><Link href="/wishlist" className="hover:text-primary">Favoritos</Link></li>
+              <li><Link href="/cuenta" className="hover:text-primary">Perfil</Link></li>
+              <li><Link href="/pedidos" className="hover:text-primary">Mis pedidos</Link></li>
+              <li><Link href="/favoritos" className="hover:text-primary">Favoritos</Link></li>
             </ul>
           </div>
 

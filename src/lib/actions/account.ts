@@ -21,7 +21,7 @@ export async function updateProfile(data: { name: string; phone: string }) {
     });
   }
 
-  revalidatePath("/account");
+  revalidatePath("/cuenta");
   return { success: true };
 }
 
@@ -57,7 +57,7 @@ export async function saveAddress(data: {
     });
   }
 
-  revalidatePath("/account");
+  revalidatePath("/cuenta");
   return { success: true };
 }
 
@@ -69,6 +69,6 @@ export async function deleteAddress(addressId: string) {
     where: { id: addressId, userId: session.user.id },
   });
 
-  revalidatePath("/account");
+  revalidatePath("/cuenta");
   return { success: true };
 }

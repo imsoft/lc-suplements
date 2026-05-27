@@ -17,7 +17,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
   const { id } = await params;
   const { status } = await searchParams;
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/autenticacion/iniciar-sesion");
 
   const order = await db.order.findFirst({
     where: { id, userId: session.user.id },
@@ -74,7 +74,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
               className={`flex justify-between p-4 ${i < order.items.length - 1 ? "border-b border-border" : ""}`}
             >
               <div>
-                <Link href={`/products/${item.product.slug}`} className="text-sm font-medium hover:text-primary">
+                <Link href={`/productos/${item.product.slug}`} className="text-sm font-medium hover:text-primary">
                   {item.product.name}
                 </Link>
                 <p className="text-xs text-muted-foreground">
@@ -120,7 +120,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
       </div>
 
       <div className="mt-6">
-        <Link href="/orders" className="text-sm text-primary hover:underline">
+        <Link href="/pedidos" className="text-sm text-primary hover:underline">
           ← Volver a mis pedidos
         </Link>
       </div>

@@ -47,7 +47,7 @@ export default async function CartPage() {
         <div className="flex flex-col items-center gap-4 py-16 text-center">
           <p className="text-muted-foreground">Tu carrito está vacío.</p>
           <Button asChild>
-            <Link href="/products">Ver productos</Link>
+            <Link href="/productos">Ver productos</Link>
           </Button>
         </div>
       ) : (
@@ -77,10 +77,10 @@ export default async function CartPage() {
               </div>
             </div>
             <Button className="mt-4 w-full" asChild>
-              <Link href="/checkout">Proceder al pago</Link>
+              <Link href="/pagar">Proceder al pago</Link>
             </Button>
             <Button variant="outline" className="mt-2 w-full" asChild>
-              <Link href="/products">Seguir comprando</Link>
+              <Link href="/productos">Seguir comprando</Link>
             </Button>
           </div>
         </div>

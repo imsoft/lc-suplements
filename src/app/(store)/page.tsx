@@ -70,7 +70,7 @@ export default async function HomePage() {
                 className="px-10 py-6 text-base font-bold uppercase tracking-widest"
                 asChild
               >
-                <Link href="/products">Ver catálogo</Link>
+                <Link href="/productos">Ver catálogo</Link>
               </Button>
               <Button
                 size="lg"
@@ -140,7 +140,7 @@ export default async function HomePage() {
             {categories.map((cat, i) => (
               <AnimateIn key={cat.id} delay={i * 80}>
                 <Link
-                  href={`/products?category=${cat.slug}`}
+                  href={`/productos?category=${cat.slug}`}
                   className="group flex h-full flex-col items-center justify-center bg-secondary p-10 text-center transition-colors hover:bg-primary"
                 >
                   <span className="text-sm font-bold uppercase tracking-wider text-secondary-foreground transition-colors group-hover:text-primary-foreground">
@@ -167,7 +167,7 @@ export default async function HomePage() {
                 </h2>
               </div>
               <Link
-                href="/products"
+                href="/productos"
                 className="text-sm font-bold uppercase tracking-wider text-primary hover:underline"
               >
                 Ver todos →
@@ -262,7 +262,7 @@ export default async function HomePage() {
               className="px-12 py-6 text-base font-bold uppercase tracking-widest"
               asChild
             >
-              <Link href="/products">Comprar ahora</Link>
+              <Link href="/productos">Comprar ahora</Link>
             </Button>
             <Button
               size="lg"

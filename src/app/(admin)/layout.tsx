@@ -17,7 +17,7 @@ export default async function AdminLayout({
 }) {
   const session = await auth.api.getSession({ headers: await headers() });
 
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/autenticacion/iniciar-sesion");
   if (session.user.role !== "ADMIN") redirect("/");
 
   return <AdminShell>{children}</AdminShell>;

@@ -19,7 +19,7 @@ export function ForgotPasswordForm() {
 
     const result = await authClient.requestPasswordReset({
       email,
-      redirectTo: "/auth/reset-password",
+      redirectTo: "/autenticacion/restablecer-contrasena",
     });
 
     setLoading(false);
@@ -44,7 +44,7 @@ export function ForgotPasswordForm() {
           Si existe una cuenta con ese correo, recibirás un enlace para restablecer tu contraseña.
           El enlace expira en 1 hora.
         </p>
-        <Link href="/auth/login" className="mt-6 inline-block text-sm text-primary hover:underline">
+        <Link href="/autenticacion/iniciar-sesion" className="mt-6 inline-block text-sm text-primary hover:underline">
           Volver al inicio de sesión
         </Link>
       </div>
@@ -89,7 +89,7 @@ export function ForgotPasswordForm() {
       </form>
 
       <p className="mt-6 text-center text-sm text-muted-foreground">
-        <Link href="/auth/login" className="text-primary hover:underline">
+        <Link href="/autenticacion/iniciar-sesion" className="text-primary hover:underline">
           Volver al inicio de sesión
         </Link>
       </p>

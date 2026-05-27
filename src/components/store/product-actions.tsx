@@ -57,7 +57,7 @@ export function ProductActions({
 
   function handleWishlist() {
     if (!userId) {
-      router.push("/auth/login");
+      router.push("/autenticacion/iniciar-sesion");
       return;
     }
     startTransition(async () => {

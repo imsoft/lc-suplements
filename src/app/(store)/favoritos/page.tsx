@@ -9,7 +9,7 @@ export const metadata: Metadata = { title: "Favoritos | LC Suplements" };
 
 export default async function WishlistPage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/auth/login");
+  if (!session) redirect("/autenticacion/iniciar-sesion");
 
   const wishlist = await db.wishlistItem.findMany({
     where: { userId: session.user.id },

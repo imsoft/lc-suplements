@@ -44,7 +44,7 @@ export function LoginForm() {
         <h1 className="text-2xl font-bold tracking-tight">Iniciar sesión</h1>
         <p className="mt-2 text-sm text-muted-foreground">
           ¿No tienes cuenta?{" "}
-          <Link href="/auth/register" className="text-primary hover:underline">
+          <Link href="/autenticacion/registro" className="text-primary hover:underline">
             Regístrate
           </Link>
         </p>
@@ -77,7 +77,7 @@ export function LoginForm() {
             <label htmlFor="password" className="text-sm font-medium">
               Contraseña
             </label>
-            <Link href="/auth/forgot-password" className="text-xs text-primary hover:underline">
+            <Link href="/autenticacion/olvide-contrasena" className="text-xs text-primary hover:underline">
               ¿Olvidaste tu contraseña?
             </Link>
           </div>

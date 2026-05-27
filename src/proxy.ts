@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-const PROTECTED_STORE = ["/orders", "/wishlist", "/account"];
+const PROTECTED_STORE = ["/pedidos", "/favoritos", "/cuenta"];
 const PROTECTED_ADMIN = ["/admin"];
-const AUTH_ROUTES = ["/auth/login", "/auth/register"];
+const AUTH_ROUTES = ["/autenticacion/iniciar-sesion", "/autenticacion/registro"];
 
 // Better Auth usa el prefijo __Secure- en producción HTTPS
 function hasSessionCookie(request: NextRequest) {
@@ -28,14 +28,14 @@ export default function proxy(request: NextRequest) {
 
   // Rutas protegidas de la tienda → login
   if (isProtectedStore && !hasSession) {
-    const loginUrl = new URL("/auth/login", request.url);
+    const loginUrl = new URL("/autenticacion/iniciar-sesion", request.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
   // Rutas de admin → login si no hay sesión
   if (isAdminRoute && !hasSession) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    return NextResponse.redirect(new URL("/autenticacion/iniciar-sesion", request.url));
   }
 
   return NextResponse.next();

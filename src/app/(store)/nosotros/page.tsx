@@ -209,7 +209,7 @@ export default function NosotrosPage() {
               className="px-10 py-6 font-bold uppercase tracking-wider"
               asChild
             >
-              <Link href="/products">Ver productos</Link>
+              <Link href="/productos">Ver productos</Link>
             </Button>
             <Button
               size="lg"

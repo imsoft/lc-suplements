@@ -31,7 +31,7 @@ export default async function CheckoutPage() {
     }
   }
 
-  if (!cart || cart.items.length === 0) redirect("/cart");
+  if (!cart || cart.items.length === 0) redirect("/carrito");
 
   const defaultAddress = session
     ? await db.address.findFirst({ where: { userId: session.user.id, isDefault: true } })

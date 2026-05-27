@@ -26,7 +26,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link
-      href={`/products/${product.slug}`}
+      href={`/productos/${product.slug}`}
       className="group flex flex-col overflow-hidden rounded border border-border bg-card transition-shadow hover:shadow-md"
     >
       <div className="relative aspect-square overflow-hidden bg-muted">

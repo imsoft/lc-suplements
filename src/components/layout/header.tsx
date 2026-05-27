@@ -22,9 +22,9 @@ import { useRouter } from "next/navigation";
 import { SiteLogo } from "@/components/brand/site-logo";
 
 const NAV_LINKS = [
-  { href: "/products", label: "Productos" },
-  { href: "/products?category=proteinas", label: "Proteínas" },
-  { href: "/products?category=creatinas", label: "Creatinas" },
+  { href: "/productos", label: "Productos" },
+  { href: "/productos?category=proteinas", label: "Proteínas" },
+  { href: "/productos?category=creatinas", label: "Creatinas" },
   { href: "/nosotros", label: "Nosotros" },
   { href: "/faq", label: "FAQ" },
   { href: "/contacto", label: "Contacto" },
@@ -59,7 +59,7 @@ export function Header() {
     e.preventDefault();
     const q = searchQuery.trim();
     if (!q) return;
-    router.push(`/products?q=${encodeURIComponent(q)}`);
+    router.push(`/productos?q=${encodeURIComponent(q)}`);
     setSearchOpen(false);
     setSearchQuery("");
   }
@@ -119,13 +119,13 @@ export function Header() {
           </Button>
 
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/wishlist">
+            <Link href="/favoritos">
               <HugeiconsIcon icon={FavouriteIcon} size={20} />
             </Link>
           </Button>
 
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/cart">
+            <Link href="/carrito">
               <HugeiconsIcon icon={ShoppingCart02Icon} size={20} />
             </Link>
           </Button>
@@ -153,7 +153,7 @@ export function Header() {
                   {/* Links */}
                   <nav className="py-1">
                     <Link
-                      href="/account"
+                      href="/cuenta"
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-secondary hover:text-secondary-foreground"
                     >
@@ -161,7 +161,7 @@ export function Header() {
                       Mi cuenta
                     </Link>
                     <Link
-                      href="/orders"
+                      href="/pedidos"
                       onClick={() => setUserMenuOpen(false)}
                       className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors hover:bg-secondary hover:text-secondary-foreground"
                     >
@@ -196,10 +196,10 @@ export function Header() {
           ) : (
             <div className="hidden items-center gap-2 md:flex">
               <Button variant="ghost" size="sm" asChild>
-                <Link href="/auth/login">Iniciar sesión</Link>
+                <Link href="/autenticacion/iniciar-sesion">Iniciar sesión</Link>
               </Button>
               <Button size="sm" asChild>
-                <Link href="/auth/register">Registrarse</Link>
+                <Link href="/autenticacion/registro">Registrarse</Link>
               </Button>
             </div>
           )}
@@ -238,7 +238,7 @@ export function Header() {
                     <p className="text-xs text-muted-foreground">{session.user.email}</p>
                   </div>
                   <Link
-                    href="/account"
+                    href="/cuenta"
                     className="flex items-center gap-2 py-2 text-sm font-medium hover:text-primary"
                     onClick={() => setMobileOpen(false)}
                   >
@@ -246,7 +246,7 @@ export function Header() {
                     Mi cuenta
                   </Link>
                   <Link
-                    href="/orders"
+                    href="/pedidos"
                     className="flex items-center gap-2 py-2 text-sm font-medium hover:text-primary"
                     onClick={() => setMobileOpen(false)}
                   >
@@ -274,14 +274,14 @@ export function Header() {
               ) : (
                 <>
                   <Link
-                    href="/auth/login"
+                    href="/autenticacion/iniciar-sesion"
                     className="py-2 text-sm font-medium hover:text-primary"
                     onClick={() => setMobileOpen(false)}
                   >
                     Iniciar sesión
                   </Link>
                   <Link
-                    href="/auth/register"
+                    href="/autenticacion/registro"
                     className="py-2 text-sm font-medium text-primary"
                     onClick={() => setMobileOpen(false)}
                   >

@@ -77,7 +77,7 @@ export async function createProduct(formData: FormData) {
   }
 
   revalidatePath("/admin/products");
-  revalidatePath("/products");
+  revalidatePath("/productos");
   return { success: true, productId: product.id };
 }
 
@@ -97,7 +97,7 @@ export async function updateProduct(productId: string, formData: FormData) {
   });
 
   revalidatePath("/admin/products");
-  revalidatePath("/products");
+  revalidatePath("/productos");
   return { success: true };
 }
 
@@ -109,7 +109,7 @@ export async function deleteProduct(productId: string) {
 
   await db.product.delete({ where: { id: productId } });
   revalidatePath("/admin/products");
-  revalidatePath("/products");
+  revalidatePath("/productos");
   return { success: true };
 }
 

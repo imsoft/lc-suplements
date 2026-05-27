@@ -29,7 +29,7 @@ export default function GraciasPage() {
         </a>
       </p>
       <Button asChild>
-        <Link href="/products">Seguir comprando</Link>
+        <Link href="/productos">Seguir comprando</Link>
       </Button>
     </div>
   );

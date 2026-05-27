@@ -21,6 +21,6 @@ export async function toggleWishlist({ productId }: { productId: string }) {
     });
   }
 
-  revalidatePath("/wishlist");
+  revalidatePath("/favoritos");
   return { success: true };
 }
