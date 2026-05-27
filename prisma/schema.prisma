@@ -136,8 +136,9 @@ model ProductVariant {
 
 model Cart {
   id        String     @id @default(cuid())
-  userId    String     @unique
-  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String?    @unique
+  user      User?      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sessionId String?    @unique
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   items     CartItem[]
@@ -162,8 +163,9 @@ model CartItem {
 
 model Order {
   id              String        @id @default(cuid())
-  userId          String
-  user            User          @relation(fields: [userId], references: [id])
+  userId          String?
+  user            User?         @relation(fields: [userId], references: [id])
+  guestEmail      String?
   status          OrderStatus   @default(PENDING)
   paymentStatus   PaymentStatus @default(PENDING)
   paymentMethod   String?

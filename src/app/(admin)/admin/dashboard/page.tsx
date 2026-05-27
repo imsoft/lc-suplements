@@ -54,7 +54,7 @@ export default async function DashboardPage() {
             {recentOrders.map((order) => (
               <tr key={order.id} className="hover:bg-muted/30">
                 <td className="px-4 py-3 font-mono text-xs">#{order.id.slice(-8).toUpperCase()}</td>
-                <td className="px-4 py-3">{order.user.name}</td>
+                <td className="px-4 py-3">{order.user?.name ?? order.guestEmail ?? "Invitado"}</td>
                 <td className="px-4 py-3 font-medium">
                   ${Number(order.total).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
                 </td>

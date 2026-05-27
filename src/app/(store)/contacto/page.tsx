@@ -55,7 +55,12 @@ export default function ContactoPage() {
                 },
                 {
                   label: "Teléfono / WhatsApp",
-                  content: "+52 (55) 1234-5678",
+                  content: "33 3949 4924",
+                },
+                {
+                  label: "Dirección",
+                  content: "Av. Patria 3343B, Loma Bonita Ejidal, 45080 Zapopan, Jal.",
+                  href: "https://maps.app.goo.gl/8Tmd4Y9M9TFveS1t8",
                 },
                 {
                   label: "Horario de atención",
@@ -68,7 +73,18 @@ export default function ContactoPage() {
                     <p className="mb-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                       {item.label}
                     </p>
-                    <p className="font-semibold">{item.content}</p>
+                    {item.href ? (
+                      <a
+                        href={item.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-semibold hover:text-primary hover:underline"
+                      >
+                        {item.content}
+                      </a>
+                    ) : (
+                      <p className="font-semibold">{item.content}</p>
+                    )}
                     {item.sub && (
                       <p className="text-sm text-muted-foreground">{item.sub}</p>
                     )}

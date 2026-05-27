@@ -3,31 +3,39 @@ import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { CheckoutForm } from "@/components/store/checkout-form";
+import { getGuestSessionId } from "@/lib/guest-session";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Checkout | LC Suplements" };
 
+const cartInclude = {
+  items: {
+    include: {
+      product: { select: { id: true, name: true, slug: true } },
+      variant: true,
+    },
+  },
+} as const;
+
 export default async function CheckoutPage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/auth/login?callbackUrl=/checkout");
 
-  const cart = await db.cart.findUnique({
-    where: { userId: session.user.id },
-    include: {
-      items: {
-        include: {
-          product: { select: { id: true, name: true, slug: true } },
-          variant: true,
-        },
-      },
-    },
-  });
+  // Obtener carrito (usuario o invitado)
+  let cart;
+  if (session) {
+    cart = await db.cart.findUnique({ where: { userId: session.user.id }, include: cartInclude });
+  } else {
+    const sessionId = await getGuestSessionId();
+    if (sessionId) {
+      cart = await db.cart.findUnique({ where: { sessionId }, include: cartInclude });
+    }
+  }
 
   if (!cart || cart.items.length === 0) redirect("/cart");
 
-  const defaultAddress = await db.address.findFirst({
-    where: { userId: session.user.id, isDefault: true },
-  });
+  const defaultAddress = session
+    ? await db.address.findFirst({ where: { userId: session.user.id, isDefault: true } })
+    : null;
 
   const shippingZones = await db.shippingZone.findMany({
     where: { isActive: true },
@@ -59,8 +67,9 @@ export default async function CheckoutPage() {
         subtotal={subtotal}
         defaultAddress={defaultAddress}
         shippingZones={serializedZones}
-        userEmail={session.user.email}
-        userName={session.user.name}
+        userEmail={session?.user.email ?? ""}
+        userName={session?.user.name ?? ""}
+        isGuest={!session}
       />
     </div>
   );

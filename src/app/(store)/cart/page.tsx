@@ -1,40 +1,43 @@
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
 import Link from "next/link";
+import { headers } from "next/headers";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { CartItemRow } from "@/components/store/cart-item-row";
 import { Button } from "@/components/ui/button";
+import { getGuestSessionId } from "@/lib/guest-session";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Carrito | LC Suplements" };
 
+const cartInclude = {
+  items: {
+    include: {
+      product: { include: { images: { where: { isPrimary: true }, take: 1 } } },
+      variant: true,
+    },
+    orderBy: { createdAt: "asc" as const },
+  },
+};
+
 export default async function CartPage() {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/auth/login?callbackUrl=/cart");
 
-  const cart = await db.cart.findUnique({
-    where: { userId: session.user.id },
-    include: {
-      items: {
-        include: {
-          product: { include: { images: { where: { isPrimary: true }, take: 1 } } },
-          variant: true,
-        },
-        orderBy: { createdAt: "asc" },
-      },
-    },
-  });
+  let cart;
+  if (session) {
+    cart = await db.cart.findUnique({ where: { userId: session.user.id }, include: cartInclude });
+  } else {
+    const sessionId = await getGuestSessionId();
+    if (sessionId) {
+      cart = await db.cart.findUnique({ where: { sessionId }, include: cartInclude });
+    }
+  }
 
   const rawItems = cart?.items ?? [];
   const items = rawItems.map((item) => ({
     ...item,
     variant: { ...item.variant, price: Number(item.variant.price), stock: item.variant.stock },
   }));
-  const subtotal = items.reduce(
-    (acc, item) => acc + item.variant.price * item.quantity,
-    0
-  );
+  const subtotal = items.reduce((acc, item) => acc + item.variant.price * item.quantity, 0);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6 lg:px-8">
@@ -66,7 +69,7 @@ export default async function CartPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Envío</span>
-                <span className="text-muted-foreground">Se calcula al pagar</span>
+                <span className="font-semibold text-green-600">GRATIS</span>
               </div>
               <div className="border-t border-border pt-2 flex justify-between font-semibold text-base">
                 <span>Total</span>

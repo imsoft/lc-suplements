@@ -35,6 +35,7 @@ interface CheckoutFormProps {
   shippingZones: ShippingZone[];
   userEmail: string;
   userName: string;
+  isGuest: boolean;
 }
 
 export function CheckoutForm({
@@ -44,12 +45,14 @@ export function CheckoutForm({
   shippingZones,
   userEmail,
   userName,
+  isGuest,
 }: CheckoutFormProps) {
   const [isPending, startTransition] = useTransition();
   const [selectedZoneId, setSelectedZoneId] = useState(shippingZones[0]?.id ?? "");
   const [saveAddress, setSaveAddress] = useState(true);
 
   const [form, setForm] = useState({
+    email: userEmail,
     fullName: defaultAddress?.fullName ?? userName,
     phone: defaultAddress?.phone ?? "",
     street: defaultAddress?.street ?? "",
@@ -82,6 +85,29 @@ export function CheckoutForm({
   return (
     <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
+
+        {/* Email para invitados */}
+        {isGuest && (
+          <section className="rounded border border-border p-6">
+            <h2 className="mb-4 text-base font-semibold">Datos de contacto</h2>
+            <div className="space-y-1">
+              <label className="text-sm font-medium">Correo electrónico</label>
+              <input
+                required
+                type="email"
+                name="email"
+                value={form.email}
+                onChange={handleChange}
+                className={inputClass}
+                placeholder="tu@correo.com"
+              />
+              <p className="text-xs text-muted-foreground">
+                Te enviaremos la confirmación de tu pedido a este correo.
+              </p>
+            </div>
+          </section>
+        )}
+
         {/* Datos de envío */}
         <section className="rounded border border-border p-6">
           <h2 className="mb-4 text-base font-semibold">Dirección de envío</h2>
@@ -114,15 +140,17 @@ export function CheckoutForm({
               <label className="text-sm font-medium">Referencias</label>
               <input name="references" value={form.references} onChange={handleChange} className={inputClass} placeholder="Entre calles, color de casa..." />
             </div>
-            <label className="sm:col-span-2 flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={saveAddress}
-                onChange={(e) => setSaveAddress(e.target.checked)}
-                className="rounded"
-              />
-              Guardar dirección para futuras compras
-            </label>
+            {!isGuest && (
+              <label className="sm:col-span-2 flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={saveAddress}
+                  onChange={(e) => setSaveAddress(e.target.checked)}
+                  className="rounded"
+                />
+                Guardar dirección para futuras compras
+              </label>
+            )}
           </div>
         </section>
 
@@ -134,7 +162,7 @@ export function CheckoutForm({
               {shippingZones.map((zone) => {
                 const free = zone.freeThreshold && subtotal >= Number(zone.freeThreshold);
                 return (
-                  <label key={zone.id} className="flex items-center gap-3 rounded border border-border p-3 cursor-pointer has-[:checked]:border-primary">
+                  <label key={zone.id} className="flex items-center gap-3 rounded border border-border p-3 cursor-pointer has-checked:border-primary">
                     <input
                       type="radio"
                       name="zone"

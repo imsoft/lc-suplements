@@ -37,8 +37,8 @@ export default async function AdminOrdersPage() {
               <tr key={order.id} className="hover:bg-muted/30">
                 <td className="px-4 py-3 font-mono text-xs">#{order.id.slice(-8).toUpperCase()}</td>
                 <td className="px-4 py-3">
-                  <p className="font-medium">{order.user.name}</p>
-                  <p className="text-xs text-muted-foreground">{order.user.email}</p>
+                  <p className="font-medium">{order.user?.name ?? "Invitado"}</p>
+                  <p className="text-xs text-muted-foreground">{order.user?.email ?? order.guestEmail ?? "—"}</p>
                 </td>
                 <td className="px-4 py-3 font-medium">
                   ${Number(order.total).toLocaleString("es-MX", { minimumFractionDigits: 2 })}

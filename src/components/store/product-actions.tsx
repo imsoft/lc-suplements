@@ -44,10 +44,6 @@ export function ProductActions({
   const inStock = (selectedVariant?.stock ?? 0) > 0;
 
   function handleAddToCart() {
-    if (!userId) {
-      router.push("/auth/login");
-      return;
-    }
     startTransition(async () => {
       const result = await addToCart({
         productId: product.id,

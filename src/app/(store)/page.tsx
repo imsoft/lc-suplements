@@ -87,6 +87,18 @@ export default async function HomePage() {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-linear-to-t from-background to-transparent" />
       </section>
 
+      {/* Free shipping banner */}
+      <div className="overflow-hidden bg-primary py-3">
+        <div className="flex animate-[marquee_20s_linear_infinite] whitespace-nowrap">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <span key={i} className="mx-8 text-sm font-black uppercase tracking-[0.3em] text-primary-foreground">
+              🚚 Envío gratis en todos tus pedidos
+              <span className="mx-8 opacity-50">·</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* Stats */}
       <section className="border-y border-border py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

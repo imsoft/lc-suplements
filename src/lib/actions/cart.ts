@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
+import { getOrCreateGuestSessionId } from "@/lib/guest-session";
 
 export async function addToCart({
   productId,
@@ -15,14 +16,18 @@ export async function addToCart({
   quantity: number;
 }) {
   const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) return { error: "Debes iniciar sesión." };
 
   const variant = await db.productVariant.findUnique({ where: { id: variantId } });
   if (!variant || variant.stock < quantity) return { error: "Stock insuficiente." };
 
-  let cart = await db.cart.findUnique({ where: { userId: session.user.id } });
-  if (!cart) {
-    cart = await db.cart.create({ data: { userId: session.user.id } });
+  let cart;
+  if (session) {
+    cart = await db.cart.findUnique({ where: { userId: session.user.id } });
+    if (!cart) cart = await db.cart.create({ data: { userId: session.user.id } });
+  } else {
+    const sessionId = await getOrCreateGuestSessionId();
+    cart = await db.cart.findUnique({ where: { sessionId } });
+    if (!cart) cart = await db.cart.create({ data: { sessionId } });
   }
 
   const existing = await db.cartItem.findUnique({
@@ -32,14 +37,9 @@ export async function addToCart({
   if (existing) {
     const newQty = existing.quantity + quantity;
     if (newQty > variant.stock) return { error: "Stock insuficiente." };
-    await db.cartItem.update({
-      where: { id: existing.id },
-      data: { quantity: newQty },
-    });
+    await db.cartItem.update({ where: { id: existing.id }, data: { quantity: newQty } });
   } else {
-    await db.cartItem.create({
-      data: { cartId: cart.id, productId, variantId, quantity },
-    });
+    await db.cartItem.create({ data: { cartId: cart.id, productId, variantId, quantity } });
   }
 
   revalidatePath("/cart");
@@ -53,23 +53,16 @@ export async function updateCartItem({
   itemId: string;
   quantity: number;
 }) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) return { error: "No autorizado." };
-
   if (quantity <= 0) {
     await db.cartItem.delete({ where: { id: itemId } });
   } else {
     await db.cartItem.update({ where: { id: itemId }, data: { quantity } });
   }
-
   revalidatePath("/cart");
   return { success: true };
 }
 
 export async function removeCartItem(itemId: string) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) return { error: "No autorizado." };
-
   await db.cartItem.delete({ where: { id: itemId } });
   revalidatePath("/cart");
   return { success: true };
