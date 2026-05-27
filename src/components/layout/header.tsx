@@ -16,35 +16,41 @@ import {
   UserAccountIcon,
   DeliveryBox01Icon,
   Settings01Icon,
+  ArrowDown01Icon,
+  ArrowRight01Icon,
 } from "@hugeicons/core-free-icons";
 import { useState, useRef, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { SiteLogo } from "@/components/brand/site-logo";
 
-const NAV_LINKS = [
-  { href: "/productos", label: "Productos" },
-  { href: "/productos?category=proteinas", label: "Proteínas" },
-  { href: "/productos?category=creatinas", label: "Creatinas" },
-  { href: "/nosotros", label: "Nosotros" },
-  { href: "/faq", label: "FAQ" },
-  { href: "/contacto", label: "Contacto" },
-];
+type Category = { id: string; name: string; slug: string };
 
-export function Header() {
+interface HeaderProps {
+  categories?: Category[];
+}
+
+export function Header({ categories = [] }: HeaderProps) {
   const session = useAuthStore((s) => s.session);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mobileCatsOpen, setMobileCatsOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const searchRef = useRef<HTMLInputElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const pathname = usePathname();
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileOpen(false);
+    setMobileCatsOpen(false);
+  }, [pathname]);
 
   useEffect(() => {
     if (searchOpen) searchRef.current?.focus();
   }, [searchOpen]);
 
-  // Cierra el dropdown al hacer clic fuera
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
@@ -95,22 +101,9 @@ export function Header() {
         </div>
       )}
 
+      {/* ── Top bar: logo / actions ── */}
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Logo */}
         <SiteLogo variant="horizontal" tone="adaptive" priority />
-
-        {/* Nav desktop */}
-        <nav className="hidden items-center gap-6 md:flex">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary"
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
 
         {/* Actions */}
         <div className="flex items-center gap-1">
@@ -144,13 +137,10 @@ export function Header() {
 
               {userMenuOpen && (
                 <div className="absolute right-0 top-full mt-2 w-56 border border-border bg-background shadow-lg">
-                  {/* User info */}
                   <div className="border-b border-border px-4 py-3">
-                    <p className="text-sm font-bold truncate">{session.user.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{session.user.email}</p>
+                    <p className="truncate text-sm font-bold">{session.user.name}</p>
+                    <p className="truncate text-xs text-muted-foreground">{session.user.email}</p>
                   </div>
-
-                  {/* Links */}
                   <nav className="py-1">
                     <Link
                       href="/cuenta"
@@ -179,8 +169,6 @@ export function Header() {
                       </Link>
                     )}
                   </nav>
-
-                  {/* Sign out */}
                   <div className="border-t border-border py-1">
                     <button
                       onClick={handleSignOut}
@@ -211,26 +199,106 @@ export function Header() {
             className="md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
-            <HugeiconsIcon icon={Menu01Icon} size={20} />
+            <HugeiconsIcon icon={mobileOpen ? Cancel01Icon : Menu01Icon} size={20} />
           </Button>
         </div>
       </div>
 
-      {/* Mobile menu */}
-      {mobileOpen && (
-        <div className="border-t border-border bg-background px-4 py-4 md:hidden">
-          <nav className="flex flex-col gap-3">
-            {NAV_LINKS.map((link) => (
+      {/* ── Category bar — desktop only ── */}
+      {categories.length > 0 && (
+        <div className="hidden border-t border-border bg-secondary/40 md:block">
+          <nav className="mx-auto flex max-w-7xl items-center gap-0 overflow-x-auto px-4 scrollbar-none sm:px-6 lg:px-8">
+            {/* "Todos" shortcut */}
+            <Link
+              href="/productos"
+              className="shrink-0 whitespace-nowrap px-3 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+            >
+              Todos
+            </Link>
+            <span className="h-4 w-px shrink-0 bg-border" />
+            {categories.map((cat) => (
               <Link
-                key={link.href}
-                href={link.href}
-                className="text-sm font-medium text-muted-foreground hover:text-primary"
-                onClick={() => setMobileOpen(false)}
+                key={cat.id}
+                href={`/productos?category=${cat.slug}`}
+                className="shrink-0 whitespace-nowrap px-3 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
               >
-                {link.label}
+                {cat.name}
               </Link>
             ))}
-            <div className="mt-2 flex flex-col gap-1 border-t border-border pt-3">
+          </nav>
+        </div>
+      )}
+
+      {/* ── Mobile drawer ── */}
+      {mobileOpen && (
+        <div className="border-t border-border bg-background md:hidden">
+          <div className="px-4 py-4">
+            {/* Categories accordion */}
+            {categories.length > 0 && (
+              <div className="mb-3">
+                <button
+                  onClick={() => setMobileCatsOpen((v) => !v)}
+                  className="flex w-full items-center justify-between py-2 text-sm font-semibold uppercase tracking-wide text-foreground"
+                >
+                  <span>Categorías</span>
+                  <HugeiconsIcon
+                    icon={mobileCatsOpen ? ArrowDown01Icon : ArrowRight01Icon}
+                    size={16}
+                    className="text-muted-foreground"
+                  />
+                </button>
+
+                {mobileCatsOpen && (
+                  <div className="mt-1 flex flex-col border-l-2 border-primary/30 pl-3">
+                    <Link
+                      href="/productos"
+                      className="py-2 text-sm font-medium text-muted-foreground hover:text-primary"
+                      onClick={() => setMobileOpen(false)}
+                    >
+                      Todos los productos
+                    </Link>
+                    {categories.map((cat) => (
+                      <Link
+                        key={cat.id}
+                        href={`/productos?category=${cat.slug}`}
+                        className="py-2 text-sm text-muted-foreground hover:text-primary"
+                        onClick={() => setMobileOpen(false)}
+                      >
+                        {cat.name}
+                      </Link>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Other links */}
+            <div className="flex flex-col border-t border-border pt-3">
+              <Link
+                href="/nosotros"
+                className="py-2 text-sm font-medium text-muted-foreground hover:text-primary"
+                onClick={() => setMobileOpen(false)}
+              >
+                Nosotros
+              </Link>
+              <Link
+                href="/faq"
+                className="py-2 text-sm font-medium text-muted-foreground hover:text-primary"
+                onClick={() => setMobileOpen(false)}
+              >
+                FAQ
+              </Link>
+              <Link
+                href="/contacto"
+                className="py-2 text-sm font-medium text-muted-foreground hover:text-primary"
+                onClick={() => setMobileOpen(false)}
+              >
+                Contacto
+              </Link>
+            </div>
+
+            {/* Auth section */}
+            <div className="mt-3 flex flex-col gap-1 border-t border-border pt-3">
               {session ? (
                 <>
                   <div className="mb-2 px-1">
@@ -290,7 +358,7 @@ export function Header() {
                 </>
               )}
             </div>
-          </nav>
+          </div>
         </div>
       )}
     </header>
