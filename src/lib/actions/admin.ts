@@ -127,6 +127,22 @@ export async function createCategory(data: {
   return { success: true };
 }
 
+export async function updateCategory(
+  categoryId: string,
+  data: { name: string; description?: string; parentId?: string }
+) {
+  await requireAdmin();
+  const slug = data.name
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[̀-ͯ]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-z0-9-]/g, "");
+  await db.category.update({ where: { id: categoryId }, data: { ...data, slug, parentId: data.parentId || null } });
+  revalidatePath("/admin/categories");
+  return { success: true };
+}
+
 export async function deleteCategory(categoryId: string) {
   await requireAdmin();
   await db.category.delete({ where: { id: categoryId } });
