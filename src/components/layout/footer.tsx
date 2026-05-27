@@ -15,7 +15,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
               Productos
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
@@ -27,7 +27,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
               Mi cuenta
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
@@ -38,7 +38,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">
+            <h3 className="mb-3 text-sm font-semibold uppercase tracking-wider text-primary">
               Empresa
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
