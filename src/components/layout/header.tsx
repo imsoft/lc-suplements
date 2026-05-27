@@ -206,21 +206,20 @@ export function Header({ categories = [] }: HeaderProps) {
 
       {/* ── Category bar — desktop only ── */}
       {categories.length > 0 && (
-        <div className="hidden border-t border-border bg-secondary/40 md:block">
-          <nav className="mx-auto flex max-w-7xl items-center gap-0 overflow-x-auto px-4 scrollbar-none sm:px-6 lg:px-8">
-            {/* "Todos" shortcut */}
+        <div className="hidden bg-secondary md:block">
+          <nav className="mx-auto flex max-w-7xl items-center overflow-x-auto px-4 scrollbar-none sm:px-6 lg:px-8">
             <Link
               href="/productos"
-              className="shrink-0 whitespace-nowrap px-3 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+              className="shrink-0 whitespace-nowrap px-3 py-2.5 text-xs font-semibold uppercase tracking-wide text-secondary-foreground/60 transition-colors hover:text-primary"
             >
               Todos
             </Link>
-            <span className="h-4 w-px shrink-0 bg-border" />
+            <span className="h-3 w-px shrink-0 bg-secondary-foreground/20" />
             {categories.map((cat) => (
               <Link
                 key={cat.id}
                 href={`/productos?category=${cat.slug}`}
-                className="shrink-0 whitespace-nowrap px-3 py-2.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-primary/10 hover:text-primary"
+                className="shrink-0 whitespace-nowrap px-3 py-2.5 text-xs font-medium text-secondary-foreground/70 transition-colors hover:text-primary"
               >
                 {cat.name}
               </Link>
