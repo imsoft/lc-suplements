@@ -107,19 +107,19 @@ export function Header({ categories = [] }: HeaderProps) {
 
         {/* Actions */}
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" onClick={() => setSearchOpen(true)}>
-            <HugeiconsIcon icon={Search01Icon} size={20} />
+          <Button variant="ghost" size="icon" className="size-9" onClick={() => setSearchOpen(true)}>
+            <HugeiconsIcon icon={Search01Icon} className="size-6" strokeWidth={2} />
           </Button>
 
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" className="size-9" asChild>
             <Link href="/favoritos">
-              <HugeiconsIcon icon={FavouriteIcon} size={20} />
+              <HugeiconsIcon icon={FavouriteIcon} className="size-6" strokeWidth={2} />
             </Link>
           </Button>
 
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" className="size-9" asChild>
             <Link href="/carrito">
-              <HugeiconsIcon icon={ShoppingCart02Icon} size={20} />
+              <HugeiconsIcon icon={ShoppingCart02Icon} className="size-6" strokeWidth={2} />
             </Link>
           </Button>
 
@@ -130,9 +130,9 @@ export function Header({ categories = [] }: HeaderProps) {
                 variant="ghost"
                 size="icon"
                 onClick={() => setUserMenuOpen((v) => !v)}
-                className={userMenuOpen ? "text-primary" : ""}
+                className={`size-9 ${userMenuOpen ? "text-primary" : ""}`}
               >
-                <HugeiconsIcon icon={UserCircleIcon} size={20} />
+                <HugeiconsIcon icon={UserCircleIcon} className="size-6" strokeWidth={2} />
               </Button>
 
               {userMenuOpen && (
@@ -196,10 +196,10 @@ export function Header({ categories = [] }: HeaderProps) {
           <Button
             variant="ghost"
             size="icon"
-            className="md:hidden"
+            className="size-9 md:hidden"
             onClick={() => setMobileOpen(!mobileOpen)}
           >
-            <HugeiconsIcon icon={mobileOpen ? Cancel01Icon : Menu01Icon} size={20} />
+            <HugeiconsIcon icon={mobileOpen ? Cancel01Icon : Menu01Icon} className="size-6" strokeWidth={2} />
           </Button>
         </div>
       </div>
