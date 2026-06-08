@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { db } from "@/lib/db";
 import { AdminOrderActions } from "@/components/admin/admin-order-actions";
 import { Badge } from "@/components/store/order-badge";
@@ -35,7 +36,11 @@ export default async function AdminOrdersPage() {
           <tbody className="divide-y divide-border">
             {orders.map((order) => (
               <tr key={order.id} className="hover:bg-muted/30">
-                <td className="px-4 py-3 font-mono text-xs">#{order.id.slice(-8).toUpperCase()}</td>
+                <td className="px-4 py-3 font-mono text-xs">
+                  <Link href={`/admin/orders/${order.id}`} className="text-primary hover:underline">
+                    #{order.id.slice(-8).toUpperCase()}
+                  </Link>
+                </td>
                 <td className="px-4 py-3">
                   <p className="font-medium">{order.user?.name ?? "Invitado"}</p>
                   <p className="text-xs text-muted-foreground">{order.user?.email ?? order.guestEmail ?? "—"}</p>
@@ -53,7 +58,12 @@ export default async function AdminOrdersPage() {
                   {new Date(order.createdAt).toLocaleDateString("es-MX")}
                 </td>
                 <td className="px-4 py-3">
-                  <AdminOrderActions orderId={order.id} currentStatus={order.status} />
+                  <div className="flex items-center gap-3">
+                    <AdminOrderActions orderId={order.id} currentStatus={order.status} />
+                    <Link href={`/admin/orders/${order.id}`} className="whitespace-nowrap text-xs text-primary hover:underline">
+                      Ver
+                    </Link>
+                  </div>
                 </td>
               </tr>
             ))}
