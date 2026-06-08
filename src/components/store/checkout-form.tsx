@@ -15,6 +15,7 @@ interface Address {
   fullName: string;
   phone: string;
   street: string;
+  neighborhood: string;
   city: string;
   state: string;
   zipCode: string;
@@ -56,6 +57,7 @@ export function CheckoutForm({
     fullName: defaultAddress?.fullName ?? userName,
     phone: defaultAddress?.phone ?? "",
     street: defaultAddress?.street ?? "",
+    neighborhood: defaultAddress?.neighborhood ?? "",
     city: defaultAddress?.city ?? "",
     state: defaultAddress?.state ?? "",
     zipCode: defaultAddress?.zipCode ?? "",
@@ -82,6 +84,8 @@ export function CheckoutForm({
   const inputClass =
     "w-full rounded border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary";
 
+  const Req = () => <span className="text-destructive"> *</span>;
+
   return (
     <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-3">
       <div className="space-y-6 lg:col-span-2">
@@ -91,7 +95,7 @@ export function CheckoutForm({
           <section className="rounded border border-border p-6">
             <h2 className="mb-4 text-base font-semibold">Datos de contacto</h2>
             <div className="space-y-1">
-              <label className="text-sm font-medium">Correo electrónico</label>
+              <label className="text-sm font-medium">Correo electrónico<Req /></label>
               <input
                 required
                 type="email"
@@ -113,27 +117,31 @@ export function CheckoutForm({
           <h2 className="mb-4 text-base font-semibold">Dirección de envío</h2>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="sm:col-span-2 space-y-1">
-              <label className="text-sm font-medium">Nombre completo</label>
+              <label className="text-sm font-medium">Nombre completo<Req /></label>
               <input required name="fullName" value={form.fullName} onChange={handleChange} className={inputClass} />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium">Teléfono</label>
+              <label className="text-sm font-medium">Teléfono<Req /></label>
               <input required name="phone" value={form.phone} onChange={handleChange} className={inputClass} placeholder="10 dígitos" />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium">Código postal</label>
+              <label className="text-sm font-medium">Código postal<Req /></label>
               <input required name="zipCode" value={form.zipCode} onChange={handleChange} className={inputClass} />
             </div>
             <div className="sm:col-span-2 space-y-1">
-              <label className="text-sm font-medium">Calle y número</label>
+              <label className="text-sm font-medium">Calle y número<Req /></label>
               <input required name="street" value={form.street} onChange={handleChange} className={inputClass} />
             </div>
+            <div className="sm:col-span-2 space-y-1">
+              <label className="text-sm font-medium">Colonia<Req /></label>
+              <input required name="neighborhood" value={form.neighborhood} onChange={handleChange} className={inputClass} />
+            </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium">Ciudad</label>
+              <label className="text-sm font-medium">Ciudad<Req /></label>
               <input required name="city" value={form.city} onChange={handleChange} className={inputClass} />
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-medium">Estado</label>
+              <label className="text-sm font-medium">Estado<Req /></label>
               <input required name="state" value={form.state} onChange={handleChange} className={inputClass} />
             </div>
             <div className="sm:col-span-2 space-y-1">

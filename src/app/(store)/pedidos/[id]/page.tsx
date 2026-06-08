@@ -110,6 +110,7 @@ export default async function OrderDetailPage({ params, searchParams }: OrderDet
             <h3 className="mb-2 font-semibold">Dirección de entrega</h3>
             <p>{order.address.fullName}</p>
             <p>{order.address.street}</p>
+            {order.address.neighborhood && <p>{order.address.neighborhood}</p>}
             <p>{order.address.city}, {order.address.state} {order.address.zipCode}</p>
             <p>{order.address.country}</p>
             {order.address.references && (

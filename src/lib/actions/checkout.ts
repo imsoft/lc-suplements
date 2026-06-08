@@ -12,6 +12,7 @@ interface CheckoutData {
   email: string;
   phone: string;
   street: string;
+  neighborhood: string;
   city: string;
   state: string;
   zipCode: string;
@@ -78,6 +79,7 @@ export async function createCheckout(data: CheckoutData) {
           fullName: data.fullName,
           phone: data.phone,
           street: data.street,
+          neighborhood: data.neighborhood,
           city: data.city,
           state: data.state,
           zipCode: data.zipCode,
@@ -104,6 +106,7 @@ export async function createCheckout(data: CheckoutData) {
         fullName: data.fullName,
         phone: data.phone,
         street: data.street,
+        neighborhood: data.neighborhood,
         city: data.city,
         state: data.state,
         zipCode: data.zipCode,

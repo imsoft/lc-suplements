@@ -199,14 +199,15 @@ model OrderAddress {
   id         String @id @default(cuid())
   orderId    String @unique
   order      Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  fullName   String
-  phone      String
-  street     String
-  city       String
-  state      String
-  zipCode    String
-  country    String @default("México")
-  references String?
+  fullName     String
+  phone        String
+  street       String
+  neighborhood String @default("")
+  city         String
+  state        String
+  zipCode      String
+  country      String @default("México")
+  references   String?
 }
 
 // ─── Reviews ─────────────────────────────────────────────────────────────────
@@ -246,15 +247,16 @@ model Address {
   id         String  @id @default(cuid())
   userId     String
   user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fullName   String
-  phone      String
-  street     String
-  city       String
-  state      String
-  zipCode    String
-  country    String  @default("México")
-  references String?
-  isDefault  Boolean @default(false)
+  fullName     String
+  phone        String
+  street       String
+  neighborhood String  @default("")
+  city         String
+  state        String
+  zipCode      String
+  country      String  @default("México")
+  references   String?
+  isDefault    Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
