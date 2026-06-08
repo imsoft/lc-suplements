@@ -51,6 +51,7 @@ export function CheckoutForm({
   const [isPending, startTransition] = useTransition();
   const [selectedZoneId, setSelectedZoneId] = useState(shippingZones[0]?.id ?? "");
   const [saveAddress, setSaveAddress] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   const [form, setForm] = useState({
     email: userEmail,
@@ -76,8 +77,14 @@ export function CheckoutForm({
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     startTransition(async () => {
-      await createCheckout({ ...form, shippingZoneId: selectedZoneId, saveAddress });
+      try {
+        const result = await createCheckout({ ...form, shippingZoneId: selectedZoneId, saveAddress });
+        if (result?.error) setError(result.error);
+      } catch {
+        setError("No se pudo iniciar el pago. Verifica tus datos e inténtalo de nuevo.");
+      }
     });
   }
 
@@ -226,6 +233,12 @@ export function CheckoutForm({
             </div>
           </div>
         </div>
+
+        {error && (
+          <p className="mt-4 rounded border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+            {error}
+          </p>
+        )}
 
         <Button type="submit" className="mt-6 w-full" disabled={isPending}>
           {isPending ? "Redirigiendo..." : "Pagar con MercadoPago"}

@@ -51,11 +51,10 @@ export async function createCheckout(data: CheckoutData) {
 
   if (!cart || cart.items.length === 0) return { error: "Carrito vacío." };
 
-  // ── Zona de envío ────────────────────────────────────────────────────────
-  const shippingZone = await db.shippingZone.findUnique({
-    where: { id: data.shippingZoneId },
-  });
-  if (!shippingZone) return { error: "Zona de envío inválida." };
+  // ── Zona de envío (opcional: sin zona = envío gratis) ──────────────────────
+  const shippingZone = data.shippingZoneId
+    ? await db.shippingZone.findUnique({ where: { id: data.shippingZoneId } })
+    : null;
 
   // ── Totales ──────────────────────────────────────────────────────────────
   const subtotal = cart.items.reduce(
@@ -63,8 +62,8 @@ export async function createCheckout(data: CheckoutData) {
     0
   );
   const freeShipping =
-    shippingZone.freeThreshold && subtotal >= Number(shippingZone.freeThreshold);
-  const shippingCost = freeShipping ? 0 : Number(shippingZone.cost);
+    shippingZone?.freeThreshold && subtotal >= Number(shippingZone.freeThreshold);
+  const shippingCost = !shippingZone || freeShipping ? 0 : Number(shippingZone.cost);
   const total = subtotal + shippingCost;
 
   // ── Crear orden ──────────────────────────────────────────────────────────
