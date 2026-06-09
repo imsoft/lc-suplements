@@ -3,7 +3,14 @@
 import { useTransition } from "react";
 import { updateOrderStatus } from "@/lib/actions/admin";
 
-const ORDER_STATUSES = ["PENDING", "CONFIRMED", "PROCESSING", "SHIPPED", "DELIVERED", "CANCELLED"];
+const ORDER_STATUSES = [
+  { value: "PENDING", label: "Pendiente" },
+  { value: "CONFIRMED", label: "Confirmado" },
+  { value: "PROCESSING", label: "En proceso" },
+  { value: "SHIPPED", label: "Enviado" },
+  { value: "DELIVERED", label: "Entregado" },
+  { value: "CANCELLED", label: "Cancelado" },
+];
 
 export function AdminOrderActions({
   orderId,
@@ -25,8 +32,8 @@ export function AdminOrderActions({
       className="rounded border border-border bg-background px-2 py-1 text-xs outline-none focus:border-primary"
     >
       {ORDER_STATUSES.map((s) => (
-        <option key={s} value={s}>
-          {s}
+        <option key={s.value} value={s.value}>
+          {s.label}
         </option>
       ))}
     </select>

@@ -60,8 +60,11 @@ export default async function AdminOrdersPage() {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-3">
                     <AdminOrderActions orderId={order.id} currentStatus={order.status} />
-                    <Link href={`/admin/orders/${order.id}`} className="whitespace-nowrap text-xs text-primary hover:underline">
-                      Ver
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className="inline-flex shrink-0 items-center whitespace-nowrap rounded-md bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground transition-colors hover:bg-primary/80"
+                    >
+                      Ver detalle
                     </Link>
                   </div>
                 </td>
