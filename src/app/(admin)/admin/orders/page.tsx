@@ -36,8 +36,11 @@ export default async function AdminOrdersPage() {
           <tbody className="divide-y divide-border">
             {orders.map((order) => (
               <tr key={order.id} className="hover:bg-muted/30">
-                <td className="px-4 py-3 font-mono text-xs">
-                  <Link href={`/admin/orders/${order.id}`} className="text-primary hover:underline">
+                <td className="px-4 py-3">
+                  <Link
+                    href={`/admin/orders/${order.id}`}
+                    className="font-mono text-sm font-bold text-foreground underline decoration-primary decoration-2 underline-offset-4 hover:text-primary"
+                  >
                     #{order.id.slice(-8).toUpperCase()}
                   </Link>
                 </td>
