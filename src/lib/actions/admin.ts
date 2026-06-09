@@ -81,10 +81,12 @@ export async function createProduct(formData: FormData) {
   return { success: true, productId: product.id };
 }
 
+type ImageOrderEntry = { t: "e"; id: string } | { t: "n"; i: number };
+
 export async function updateProduct(productId: string, formData: FormData) {
   await requireAdmin();
 
-  await db.product.update({
+  const product = await db.product.update({
     where: { id: productId },
     data: {
       name: formData.get("name") as string,
@@ -95,6 +97,48 @@ export async function updateProduct(productId: string, formData: FormData) {
       isActive: formData.get("isActive") === "true",
     },
   });
+
+  // ── Imágenes: aplicar orden final, eliminar las quitadas y subir las nuevas ──
+  const orderRaw = formData.get("imageOrder") as string | null;
+  if (orderRaw) {
+    const order = JSON.parse(orderRaw) as ImageOrderEntry[];
+    const newFiles = (formData.getAll("newImages") as File[]).filter((f) => f && f.size > 0).slice(0, 6);
+
+    // Eliminar las imágenes existentes que ya no están en el orden
+    const current = await db.productImage.findMany({ where: { productId } });
+    const keptIds = new Set(order.filter((o) => o.t === "e").map((o) => o.id));
+    const toDelete = current.filter((img) => !keptIds.has(img.id));
+    if (toDelete.length) {
+      await Promise.all(toDelete.map((img) => deleteProductImage(img.publicId)));
+      await db.productImage.deleteMany({ where: { id: { in: toDelete.map((i) => i.id) } } });
+    }
+
+    // Subir las nuevas (en el orden recibido)
+    const uploaded: { url: string; publicId: string }[] = [];
+    for (const file of newFiles) {
+      const buffer = await file.arrayBuffer();
+      const base64 = `data:${file.type};base64,${Buffer.from(buffer).toString("base64")}`;
+      uploaded.push(await uploadProductImage(base64, product.slug));
+    }
+
+    // Aplicar sortOrder e isPrimary según el orden final (la primera es la principal)
+    for (let i = 0; i < order.length; i++) {
+      const entry = order[i];
+      if (entry.t === "e") {
+        await db.productImage.update({
+          where: { id: entry.id },
+          data: { sortOrder: i, isPrimary: i === 0 },
+        });
+      } else {
+        const u = uploaded[entry.i];
+        if (u) {
+          await db.productImage.create({
+            data: { productId, url: u.url, publicId: u.publicId, isPrimary: i === 0, sortOrder: i },
+          });
+        }
+      }
+    }
+  }
 
   revalidatePath("/admin/products");
   revalidatePath("/productos");

@@ -18,6 +18,15 @@ interface Variant {
   stock: number;
 }
 
+interface ProductImage {
+  id: string;
+  url: string;
+}
+
+type ImageSlot =
+  | { key: string; kind: "existing"; id: string; url: string }
+  | { key: string; kind: "new"; file: File; preview: string };
+
 interface ProductFormProps {
   categories: Category[];
   product?: {
@@ -29,6 +38,7 @@ interface ProductFormProps {
     isFeatured: boolean;
     isActive: boolean;
     variants: Variant[];
+    images: ProductImage[];
   } | null;
 }
 
@@ -39,9 +49,11 @@ export function ProductForm({ categories, product }: ProductFormProps) {
     product?.variants ?? [{ name: "Presentación", value: "", price: "", stock: 0 }]
   );
   const MAX_IMAGES = 6;
-  const [images, setImages] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
+  const [slots, setSlots] = useState<ImageSlot[]>(
+    () => (product?.images ?? []).map((img) => ({ key: img.id, kind: "existing", id: img.id, url: img.url }))
+  );
   const [isDragging, setIsDragging] = useState(false);
+  const dragIndex = useRef<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function addVariant() {
@@ -59,22 +71,25 @@ export function ProductForm({ categories, product }: ProductFormProps) {
   const addFiles = useCallback((files: File[]) => {
     const imageFiles = files.filter((f) => f.type.startsWith("image/"));
     if (!imageFiles.length) return;
-    setImages((prev) => {
-      const slots = MAX_IMAGES - prev.length;
-      if (slots <= 0) return prev;
-      return [...prev, ...imageFiles.slice(0, slots)];
-    });
-    setPreviews((prev) => {
-      const slots = MAX_IMAGES - prev.length;
-      if (slots <= 0) return prev;
-      return [...prev, ...imageFiles.slice(0, slots).map((f) => URL.createObjectURL(f))];
+    setSlots((prev) => {
+      const slotsLeft = MAX_IMAGES - prev.length;
+      if (slotsLeft <= 0) return prev;
+      const toAdd: ImageSlot[] = imageFiles.slice(0, slotsLeft).map((file) => ({
+        key: `new-${crypto.randomUUID()}`,
+        kind: "new",
+        file,
+        preview: URL.createObjectURL(file),
+      }));
+      return [...prev, ...toAdd];
     });
   }, []);
 
-  function removeImage(i: number) {
-    URL.revokeObjectURL(previews[i]);
-    setImages((prev) => prev.filter((_, idx) => idx !== i));
-    setPreviews((prev) => prev.filter((_, idx) => idx !== i));
+  function removeSlot(key: string) {
+    setSlots((prev) => {
+      const slot = prev.find((s) => s.key === key);
+      if (slot?.kind === "new") URL.revokeObjectURL(slot.preview);
+      return prev.filter((s) => s.key !== key);
+    });
   }
 
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
@@ -97,6 +112,19 @@ export function ProductForm({ categories, product }: ProductFormProps) {
     addFiles(Array.from(e.dataTransfer.files));
   }
 
+  // Reordenar miniaturas (arrastrar y soltar)
+  function handleThumbDrop(to: number) {
+    const from = dragIndex.current;
+    dragIndex.current = null;
+    if (from === null || from === to) return;
+    setSlots((prev) => {
+      const next = [...prev];
+      const [moved] = next.splice(from, 1);
+      next.splice(to, 0, moved);
+      return next;
+    });
+  }
+
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
@@ -108,7 +136,23 @@ export function ProductForm({ categories, product }: ProductFormProps) {
       formData.append("variantStock", String(v.stock));
     });
 
-    images.forEach((img) => formData.append("images", img));
+    if (product) {
+      // Edición: enviar el orden final + archivos nuevos
+      const newFiles: File[] = [];
+      const order = slots.map((s) => {
+        if (s.kind === "existing") return { t: "e" as const, id: s.id };
+        const i = newFiles.length;
+        newFiles.push(s.file);
+        return { t: "n" as const, i };
+      });
+      formData.append("imageOrder", JSON.stringify(order));
+      newFiles.forEach((f) => formData.append("newImages", f));
+    } else {
+      // Creación: los archivos van en orden, el primero es el principal
+      slots.forEach((s) => {
+        if (s.kind === "new") formData.append("images", s.file);
+      });
+    }
 
     startTransition(async () => {
       if (product) {
@@ -223,102 +267,106 @@ export function ProductForm({ categories, product }: ProductFormProps) {
           ))}
         </section>
 
-        {!product && (
-          <section className="rounded border border-border p-5 space-y-4">
-            <div className="flex items-start justify-between">
+        <section className="rounded border border-border p-5 space-y-4">
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 className="font-semibold">Imágenes</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                La primera imagen es la principal. Arrastra las miniaturas para reordenarlas.
+              </p>
+            </div>
+            <span className={`text-xs font-medium tabular-nums ${slots.length >= MAX_IMAGES ? "text-destructive" : "text-muted-foreground"}`}>
+              {slots.length} / {MAX_IMAGES}
+            </span>
+          </div>
+
+          {/* Dropzone */}
+          <div
+            onDragOver={slots.length < MAX_IMAGES ? handleDragOver : undefined}
+            onDragLeave={slots.length < MAX_IMAGES ? handleDragLeave : undefined}
+            onDrop={slots.length < MAX_IMAGES ? handleDrop : undefined}
+            onClick={() => slots.length < MAX_IMAGES && fileInputRef.current?.click()}
+            className={`select-none rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors ${
+              slots.length >= MAX_IMAGES
+                ? "cursor-not-allowed border-border opacity-50"
+                : isDragging
+                ? "cursor-pointer border-primary bg-primary/5"
+                : "cursor-pointer border-border hover:border-primary/60 hover:bg-muted/30"
+            }`}
+          >
+            <div className="flex flex-col items-center gap-3 pointer-events-none">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className={`h-10 w-10 transition-colors ${isDragging ? "text-primary" : "text-muted-foreground"}`}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+              </svg>
               <div>
-                <h2 className="font-semibold">Imágenes</h2>
-                <p className="text-xs text-muted-foreground mt-0.5">La primera imagen agregada será la principal.</p>
-              </div>
-              <span className={`text-xs font-medium tabular-nums ${images.length >= MAX_IMAGES ? "text-destructive" : "text-muted-foreground"}`}>
-                {images.length} / {MAX_IMAGES}
-              </span>
-            </div>
-
-            {/* Dropzone */}
-            <div
-              onDragOver={images.length < MAX_IMAGES ? handleDragOver : undefined}
-              onDragLeave={images.length < MAX_IMAGES ? handleDragLeave : undefined}
-              onDrop={images.length < MAX_IMAGES ? handleDrop : undefined}
-              onClick={() => images.length < MAX_IMAGES && fileInputRef.current?.click()}
-              className={`select-none rounded-lg border-2 border-dashed px-6 py-10 text-center transition-colors ${
-                images.length >= MAX_IMAGES
-                  ? "cursor-not-allowed border-border opacity-50"
-                  : isDragging
-                  ? "cursor-pointer border-primary bg-primary/5"
-                  : "cursor-pointer border-border hover:border-primary/60 hover:bg-muted/30"
-              }`}
-            >
-              <div className="flex flex-col items-center gap-3 pointer-events-none">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className={`h-10 w-10 transition-colors ${isDragging ? "text-primary" : "text-muted-foreground"}`}
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={1.5}
-                >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
-                </svg>
-                <div>
-                  <p className="text-sm font-medium">
-                    {images.length >= MAX_IMAGES
-                      ? "Límite de imágenes alcanzado"
-                      : isDragging
-                      ? "Suelta las imágenes aquí"
-                      : "Arrastra imágenes aquí"}
+                <p className="text-sm font-medium">
+                  {slots.length >= MAX_IMAGES
+                    ? "Límite de imágenes alcanzado"
+                    : isDragging
+                    ? "Suelta las imágenes aquí"
+                    : "Arrastra imágenes aquí"}
+                </p>
+                {slots.length < MAX_IMAGES && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    o <span className="text-primary underline underline-offset-2">haz clic para seleccionar</span>
                   </p>
-                  {images.length < MAX_IMAGES && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      o <span className="text-primary underline underline-offset-2">haz clic para seleccionar</span>
-                    </p>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">PNG, JPG, WEBP · Máximo {MAX_IMAGES} imágenes</p>
+                )}
               </div>
+              <p className="text-xs text-muted-foreground">PNG, JPG, WEBP · Máximo {MAX_IMAGES} imágenes</p>
             </div>
+          </div>
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept="image/*"
-              className="hidden"
-              onChange={handleFileInput}
-            />
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/*"
+            className="hidden"
+            onChange={handleFileInput}
+          />
 
-            {/* Thumbnails */}
-            {images.length > 0 && (
-              <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4">
-                {images.map((file, i) => (
-                  <div key={i} className="group relative aspect-square overflow-hidden rounded-lg border border-border bg-muted">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={previews[i]}
-                      alt={file.name}
-                      className="h-full w-full object-cover"
-                    />
-                    {i === 0 && (
-                      <span className="absolute left-1.5 top-1.5 rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
-                        Principal
-                      </span>
-                    )}
-                    <button
-                      type="button"
-                      onClick={(e) => { e.stopPropagation(); removeImage(i); }}
-                      className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-background/80 text-xs font-bold text-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
-                    >
-                      ×
-                    </button>
-                    <div className="absolute inset-x-0 bottom-0 bg-background/70 px-1.5 py-1 opacity-0 transition-opacity group-hover:opacity-100">
-                      <p className="truncate text-[10px] text-foreground">{file.name}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </section>
-        )}
+          {/* Miniaturas */}
+          {slots.length > 0 && (
+            <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4">
+              {slots.map((slot, i) => (
+                <div
+                  key={slot.key}
+                  draggable
+                  onDragStart={() => { dragIndex.current = i; }}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={() => handleThumbDrop(i)}
+                  className="group relative aspect-square cursor-move overflow-hidden rounded-lg border border-border bg-muted"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={slot.kind === "existing" ? slot.url : slot.preview}
+                    alt=""
+                    className="pointer-events-none h-full w-full object-cover"
+                  />
+                  {i === 0 && (
+                    <span className="absolute left-1.5 top-1.5 rounded bg-primary px-1.5 py-0.5 text-[10px] font-semibold text-primary-foreground">
+                      Principal
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); removeSlot(slot.key); }}
+                    className="absolute right-1.5 top-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-background/80 text-xs font-bold text-foreground opacity-0 transition-opacity group-hover:opacity-100 hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
       </div>
 
       <div className="h-fit rounded border border-border p-5 space-y-3">
