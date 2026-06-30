@@ -6,8 +6,8 @@ const APP_URL = (process.env.NEXT_PUBLIC_APP_URL ?? "https://lcsuplements.com").
 );
 
 function emailHeaderLogo(): string {
-  const src = `${APP_URL}${LOGOS.emailHeaderPng}`;
-  return `<img src="${src}" alt="LC Suplements" width="220" height="56" style="display:block;margin:0 auto;height:auto;max-width:220px;border:0;outline:none" />`;
+  const src = `${APP_URL}${LOGOS.logo}`;
+  return `<img src="${src}" alt="LC Suplements" width="120" height="120" style="display:block;margin:0 auto;border-radius:16px;border:0;outline:none" />`;
 }
 
 const BASE = `
