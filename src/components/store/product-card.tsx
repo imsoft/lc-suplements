@@ -1,7 +1,10 @@
+"use client";
+
+// CldImage (next-cloudinary) usa hooks internamente, así que esta tarjeta
+// no puede ser Server Component: el catálogo devolvía 500 en cuanto un
+// producto de la lista tenía imagen.
 import Link from "next/link";
 import { CldImage } from "next-cloudinary";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { StarIcon } from "@hugeicons/core-free-icons";
 
 interface ProductCardProps {
   product: {
@@ -59,11 +62,13 @@ export function ProductCard({ product }: ProductCardProps) {
 
         {avgRating !== null && (
           <div className="mt-1 flex items-center gap-1">
-            <HugeiconsIcon
-              icon={StarIcon}
-              size={12}
-              className="fill-primary text-primary"
-            />
+            <svg
+              viewBox="0 0 24 24"
+              className="h-3 w-3 fill-primary text-primary"
+              aria-hidden="true"
+            >
+              <path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3-5.8 3 1.1-6.5L2.6 9.3l6.5-.9L12 2.5z" />
+            </svg>
             <span className="text-xs text-muted-foreground">
               {avgRating.toFixed(1)} ({product.reviews.length})
             </span>

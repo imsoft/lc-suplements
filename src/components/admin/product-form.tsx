@@ -4,6 +4,10 @@ import { useState, useTransition, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { createProduct, updateProduct } from "@/lib/actions/admin";
+import { compressImage } from "@/lib/compress-image";
+
+const MAX_IMAGES = 6;
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024; // debe coincidir con el límite del servidor
 
 interface Category {
   id: string;
@@ -48,10 +52,11 @@ export function ProductForm({ categories, product }: ProductFormProps) {
   const [variants, setVariants] = useState<Variant[]>(
     product?.variants ?? [{ name: "Presentación", value: "", price: "", stock: 0 }]
   );
-  const MAX_IMAGES = 6;
   const [slots, setSlots] = useState<ImageSlot[]>(
     () => (product?.images ?? []).map((img) => ({ key: img.id, kind: "existing", id: img.id, url: img.url }))
   );
+  const [error, setError] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const dragIndex = useRef<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -68,20 +73,41 @@ export function ProductForm({ categories, product }: ProductFormProps) {
     setVariants((prev) => prev.map((v, idx) => (idx === i ? { ...v, [field]: value } : v)));
   }
 
-  const addFiles = useCallback((files: File[]) => {
+  const addFiles = useCallback(async (files: File[]) => {
     const imageFiles = files.filter((f) => f.type.startsWith("image/"));
     if (!imageFiles.length) return;
-    setSlots((prev) => {
-      const slotsLeft = MAX_IMAGES - prev.length;
-      if (slotsLeft <= 0) return prev;
-      const toAdd: ImageSlot[] = imageFiles.slice(0, slotsLeft).map((file) => ({
-        key: `new-${crypto.randomUUID()}`,
-        kind: "new",
-        file,
-        preview: URL.createObjectURL(file),
-      }));
-      return [...prev, ...toAdd];
-    });
+
+    setIsProcessing(true);
+    try {
+      // Se reescalan en el navegador: una foto de celular de 5 MB no cabe en
+      // el cuerpo de una Server Action y hacía fallar todo el alta.
+      const compressed = await Promise.all(imageFiles.map(compressImage));
+
+      const tooBig = compressed.filter((f) => f.size > MAX_IMAGE_BYTES);
+      if (tooBig.length) {
+        setError(
+          `Estas imágenes siguen pesando más de 8 MB y no se pueden subir: ${tooBig
+            .map((f) => f.name)
+            .join(", ")}.`
+        );
+      }
+      const accepted = compressed.filter((f) => f.size <= MAX_IMAGE_BYTES);
+      if (!accepted.length) return;
+
+      setSlots((prev) => {
+        const slotsLeft = MAX_IMAGES - prev.length;
+        if (slotsLeft <= 0) return prev;
+        const toAdd: ImageSlot[] = accepted.slice(0, slotsLeft).map((file) => ({
+          key: `new-${crypto.randomUUID()}`,
+          kind: "new",
+          file,
+          preview: URL.createObjectURL(file),
+        }));
+        return [...prev, ...toAdd];
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   }, []);
 
   function removeSlot(key: string) {
@@ -93,7 +119,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
   }
 
   function handleFileInput(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.files) addFiles(Array.from(e.target.files));
+    if (e.target.files) void addFiles(Array.from(e.target.files));
     e.target.value = "";
   }
 
@@ -109,7 +135,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
   function handleDrop(e: React.DragEvent) {
     e.preventDefault();
     setIsDragging(false);
-    addFiles(Array.from(e.dataTransfer.files));
+    void addFiles(Array.from(e.dataTransfer.files));
   }
 
   // Reordenar miniaturas (arrastrar y soltar)
@@ -127,6 +153,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setError(null);
     const formData = new FormData(e.currentTarget);
 
     variants.forEach((v) => {
@@ -155,11 +182,16 @@ export function ProductForm({ categories, product }: ProductFormProps) {
     }
 
     startTransition(async () => {
-      if (product) {
-        await updateProduct(product.id, formData);
-      } else {
-        await createProduct(formData);
+      const result = product
+        ? await updateProduct(product.id, formData)
+        : await createProduct(formData);
+
+      if ("error" in result) {
+        setError(result.error);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
       }
+
       router.push("/admin/products");
       router.refresh();
     });
@@ -170,6 +202,15 @@ export function ProductForm({ categories, product }: ProductFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-3">
+      {error && (
+        <div
+          role="alert"
+          className="lg:col-span-3 rounded border border-destructive/50 bg-destructive/10 px-4 py-3 text-sm text-destructive"
+        >
+          {error}
+        </div>
+      )}
+
       <div className="space-y-5 lg:col-span-2">
         <section className="rounded border border-border p-5 space-y-4">
           <h2 className="font-semibold">Información general</h2>
@@ -253,7 +294,7 @@ export function ProductForm({ categories, product }: ProductFormProps) {
                     type="number"
                     min="0"
                     value={variant.stock}
-                    onChange={(e) => updateVariant(i, "stock", parseInt(e.target.value))}
+                    onChange={(e) => updateVariant(i, "stock", e.target.value === "" ? 0 : Math.max(0, parseInt(e.target.value, 10) || 0))}
                     className={inputClass}
                   />
                 </div>
@@ -319,7 +360,11 @@ export function ProductForm({ categories, product }: ProductFormProps) {
                   </p>
                 )}
               </div>
-              <p className="text-xs text-muted-foreground">PNG, JPG, WEBP · Máximo {MAX_IMAGES} imágenes</p>
+              <p className="text-xs text-muted-foreground">
+                {isProcessing
+                  ? "Optimizando imágenes..."
+                  : `PNG, JPG, WEBP · Máximo ${MAX_IMAGES} imágenes · se optimizan automáticamente`}
+              </p>
             </div>
           </div>
 
@@ -371,8 +416,14 @@ export function ProductForm({ categories, product }: ProductFormProps) {
 
       <div className="h-fit rounded border border-border p-5 space-y-3">
         <h2 className="font-semibold">Guardar</h2>
-        <Button type="submit" className="w-full" disabled={isPending}>
-          {isPending ? "Guardando..." : product ? "Actualizar producto" : "Crear producto"}
+        <Button type="submit" className="w-full" disabled={isPending || isProcessing}>
+          {isProcessing
+            ? "Procesando imágenes..."
+            : isPending
+              ? "Guardando..."
+              : product
+                ? "Actualizar producto"
+                : "Crear producto"}
         </Button>
         <Button type="button" variant="outline" className="w-full" onClick={() => router.push("/admin/products")}>
           Cancelar

@@ -51,6 +51,33 @@ export async function createCheckout(data: CheckoutData) {
 
   if (!cart || cart.items.length === 0) return { error: "Carrito vacío." };
 
+  // ── Validar stock antes de generar el cobro ───────────────────────────────
+  const sinStock = cart.items.filter(
+    (item) => !item.variant.isActive || item.variant.stock < item.quantity
+  );
+  if (sinStock.length > 0) {
+    const nombres = sinStock
+      .map((item) => `${item.product.name} (${item.variant.value})`)
+      .join(", ");
+    return {
+      error: `Ya no hay suficiente stock de: ${nombres}. Ajusta las cantidades en tu carrito.`,
+    };
+  }
+
+  // ── Validar datos mínimos de envío ────────────────────────────────────────
+  const requeridos: [keyof CheckoutData, string][] = [
+    ["fullName", "nombre completo"],
+    ["phone", "teléfono"],
+    ["street", "calle y número"],
+    ["neighborhood", "colonia"],
+    ["city", "ciudad"],
+    ["state", "estado"],
+    ["zipCode", "código postal"],
+  ];
+  const faltante = requeridos.find(([campo]) => !String(data[campo] ?? "").trim());
+  if (faltante) return { error: `Falta el ${faltante[1]} de la dirección de envío.` };
+  if (!payerEmail?.includes("@")) return { error: "Necesitamos un correo electrónico válido." };
+
   // ── Zona de envío (opcional: sin zona = envío gratis) ──────────────────────
   const shippingZone = data.shippingZoneId
     ? await db.shippingZone.findUnique({ where: { id: data.shippingZoneId } })
@@ -152,11 +179,15 @@ export async function createCheckout(data: CheckoutData) {
     data: { mpPreferenceId: preference.id },
   });
 
+  if (!preference.init_point) {
+    return { error: "MercadoPago no devolvió un enlace de pago. Inténtalo de nuevo." };
+  }
+
   // Vaciar carrito
   await db.cartItem.deleteMany({ where: { cartId: cart.id } });
 
   // Limpiar cookie de invitado
   if (!userId) await clearGuestSession();
 
-  redirect(preference.init_point!);
+  redirect(preference.init_point);
 }

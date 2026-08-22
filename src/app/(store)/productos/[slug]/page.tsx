@@ -152,7 +152,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <p className="leading-relaxed text-muted-foreground">{product.description}</p>
 
           <ProductActions
-            product={product}
+            product={{ id: product.id, name: product.name }}
             variants={product.variants.map((v) => ({
               ...v,
               price: Number(v.price),

@@ -5,30 +5,50 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { saveShippingZone } from "@/lib/actions/admin";
 
-export function ShippingZoneForm() {
+export interface ShippingZoneInput {
+  id: string;
+  name: string;
+  states: string[];
+  cost: number;
+  freeThreshold: number | null;
+}
+
+export function ShippingZoneForm({ zone }: { zone?: ShippingZoneInput }) {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [cost, setCost] = useState("");
-  const [alwaysFree, setAlwaysFree] = useState(false);
-  const [freeThreshold, setFreeThreshold] = useState("");
-  const [statesInput, setStatesInput] = useState("");
+  const [name, setName] = useState(zone?.name ?? "");
+  const [cost, setCost] = useState(zone ? String(zone.cost) : "");
+  const [alwaysFree, setAlwaysFree] = useState(
+    zone ? zone.cost === 0 && zone.freeThreshold === null : false
+  );
+  const [freeThreshold, setFreeThreshold] = useState(
+    zone?.freeThreshold != null ? String(zone.freeThreshold) : ""
+  );
+  const [statesInput, setStatesInput] = useState(zone?.states.join(", ") ?? "");
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     const states = statesInput
       .split(",")
       .map((s) => s.trim())
       .filter(Boolean);
 
     startTransition(async () => {
-      await saveShippingZone({
+      const result = await saveShippingZone({
+        id: zone?.id,
         name,
         states,
         cost: alwaysFree ? 0 : parseFloat(cost),
         freeThreshold: !alwaysFree && freeThreshold ? parseFloat(freeThreshold) : undefined,
       });
+      if ("error" in result) {
+        setError(result.error);
+        return;
+      }
       router.push("/admin/shipping");
+      router.refresh();
     });
   }
 
@@ -37,6 +57,11 @@ export function ShippingZoneForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded border border-border p-5">
+      {error && (
+        <p role="alert" className="rounded border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {error}
+        </p>
+      )}
       <div className="space-y-1">
         <label className="text-sm font-medium">Nombre de la zona *</label>
         <input
@@ -112,7 +137,7 @@ export function ShippingZoneForm() {
 
       <div className="flex gap-3">
         <Button type="submit" disabled={isPending}>
-          {isPending ? "Guardando..." : "Guardar zona"}
+          {isPending ? "Guardando..." : zone ? "Guardar cambios" : "Guardar zona"}
         </Button>
         <Button type="button" variant="outline" onClick={() => router.push("/admin/shipping")}>
           Cancelar

@@ -22,17 +22,24 @@ export function EditCategoryForm({ category, categories }: Props) {
   const [name, setName] = useState(category.name);
   const [description, setDescription] = useState(category.description ?? "");
   const [parentId, setParentId] = useState(category.parentId ?? "");
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     startTransition(async () => {
-      await updateCategory(category.id, {
+      const result = await updateCategory(category.id, {
         name,
         description: description || undefined,
         parentId: parentId || undefined,
       });
+      if ("error" in result) {
+        setError(result.error);
+        return;
+      }
       router.push("/admin/categories");
+      router.refresh();
     });
   }
 
@@ -41,6 +48,11 @@ export function EditCategoryForm({ category, categories }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded border border-border p-5">
+      {error && (
+        <p role="alert" className="rounded border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {error}
+        </p>
+      )}
       <div className="space-y-1">
         <label className="text-sm font-medium">Nombre *</label>
         <input

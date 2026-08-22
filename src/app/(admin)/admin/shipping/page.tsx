@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { Button } from "@/components/ui/button";
+import { AdminShippingActions } from "@/components/admin/admin-shipping-actions";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Envíos | LC Admin" };
@@ -18,7 +19,13 @@ export default async function AdminShippingPage() {
       </div>
 
       {zones.length === 0 ? (
-        <p className="text-muted-foreground text-sm">Sin zonas configuradas.</p>
+        <div className="rounded border border-dashed border-border p-6 text-sm text-muted-foreground">
+          <p className="font-medium text-foreground">Sin zonas configuradas.</p>
+          <p className="mt-1">
+            Mientras no exista ninguna zona, todos los pedidos se cobran con envío
+            gratis. Crea al menos una zona para cobrar el envío.
+          </p>
+        </div>
       ) : (
         <div className="space-y-3">
           {zones.map((zone) => (
@@ -30,7 +37,7 @@ export default async function AdminShippingPage() {
                     {zone.states.join(", ") || "Todos los estados"}
                   </p>
                 </div>
-                <div className="text-right">
+                <div className="flex flex-col items-end gap-2">
                   <p className="font-bold text-primary">
                     ${Number(zone.cost).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
                   </p>
@@ -39,6 +46,7 @@ export default async function AdminShippingPage() {
                       Gratis arriba de ${Number(zone.freeThreshold).toLocaleString("es-MX")}
                     </p>
                   )}
+                  <AdminShippingActions zoneId={zone.id} />
                 </div>
               </div>
             </div>

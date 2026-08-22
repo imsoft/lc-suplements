@@ -69,10 +69,10 @@ export default async function CartPage() {
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Envío</span>
-                <span className="font-semibold text-green-600">GRATIS</span>
+                <span className="text-muted-foreground">Se calcula al pagar</span>
               </div>
               <div className="border-t border-border pt-2 flex justify-between font-semibold text-base">
-                <span>Total</span>
+                <span>Subtotal</span>
                 <span>${subtotal.toLocaleString("es-MX", { minimumFractionDigits: 2 })}</span>
               </div>
             </div>

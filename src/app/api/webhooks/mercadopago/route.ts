@@ -5,7 +5,15 @@ import { mpPayment } from "@/lib/mercadopago";
 
 function verifySignature(request: NextRequest, rawBody: string): boolean {
   const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
-  if (!secret) return true; // Si no está configurado, se omite en desarrollo
+  if (!secret) {
+    // En producción se rechaza: sin secreto cualquiera podría marcar
+    // pedidos como pagados. En local se permite para poder probar.
+    if (process.env.NODE_ENV === "production") {
+      console.error("MERCADOPAGO_WEBHOOK_SECRET no está configurado; webhook rechazado.");
+      return false;
+    }
+    return true;
+  }
 
   const xSignature = request.headers.get("x-signature");
   const xRequestId = request.headers.get("x-request-id");
@@ -45,14 +53,36 @@ export async function POST(request: NextRequest) {
 
   if (!orderId) return NextResponse.json({ received: true });
 
+  const order = await db.order.findUnique({
+    where: { id: orderId },
+    include: { items: { select: { variantId: true, quantity: true } } },
+  });
+  if (!order) return NextResponse.json({ received: true });
+
+  const approved = payment.status === "approved";
+  const yaPagado = order.paymentStatus === "PAID";
+
   await db.order.update({
     where: { id: orderId },
     data: {
       mpPaymentId: String(paymentId),
-      paymentStatus: payment.status === "approved" ? "PAID" : payment.status === "rejected" ? "FAILED" : "PENDING",
-      status: payment.status === "approved" ? "CONFIRMED" : "PENDING",
+      paymentStatus: approved ? "PAID" : payment.status === "rejected" ? "FAILED" : "PENDING",
+      status: approved ? "CONFIRMED" : order.status,
     },
   });
+
+  // Descontar inventario una sola vez, cuando el pago se aprueba.
+  // MercadoPago reenvía la misma notificación varias veces.
+  if (approved && !yaPagado) {
+    await Promise.all(
+      order.items.map((item) =>
+        db.productVariant.update({
+          where: { id: item.variantId },
+          data: { stock: { decrement: item.quantity } },
+        })
+      )
+    );
+  }
 
   return NextResponse.json({ received: true });
 }

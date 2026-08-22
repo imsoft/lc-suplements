@@ -1,4 +1,6 @@
+import Link from "next/link";
 import { db } from "@/lib/db";
+import { Badge } from "@/components/store/order-badge";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Dashboard | LC Admin" };
@@ -51,17 +53,29 @@ export default async function DashboardPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
+            {recentOrders.length === 0 && (
+              <tr>
+                <td colSpan={5} className="px-4 py-6 text-center text-muted-foreground">
+                  Aún no hay pedidos.
+                </td>
+              </tr>
+            )}
             {recentOrders.map((order) => (
               <tr key={order.id} className="hover:bg-muted/30">
-                <td className="px-4 py-3 font-mono text-xs">#{order.id.slice(-8).toUpperCase()}</td>
+                <td className="px-4 py-3">
+                  <Link
+                    href={`/admin/orders/${order.id}`}
+                    className="font-mono text-xs font-bold underline decoration-primary decoration-2 underline-offset-4 hover:text-primary"
+                  >
+                    #{order.id.slice(-8).toUpperCase()}
+                  </Link>
+                </td>
                 <td className="px-4 py-3">{order.user?.name ?? order.guestEmail ?? "Invitado"}</td>
                 <td className="px-4 py-3 font-medium">
                   ${Number(order.total).toLocaleString("es-MX", { minimumFractionDigits: 2 })}
                 </td>
                 <td className="px-4 py-3">
-                  <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                    {order.status}
-                  </span>
+                  <Badge status={order.status} />
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">
                   {new Date(order.createdAt).toLocaleDateString("es-MX")}

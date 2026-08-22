@@ -10,13 +10,20 @@ export function CreateCategoryForm({ categories }: { categories: { id: string; n
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [parentId, setParentId] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setError(null);
     startTransition(async () => {
-      await createCategory({ name, description, parentId: parentId || undefined });
+      const result = await createCategory({ name, description, parentId: parentId || undefined });
+      if ("error" in result) {
+        setError(result.error);
+        return;
+      }
       router.push("/admin/categories");
+      router.refresh();
     });
   }
 
@@ -25,6 +32,11 @@ export function CreateCategoryForm({ categories }: { categories: { id: string; n
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 rounded border border-border p-5">
+      {error && (
+        <p role="alert" className="rounded border border-destructive/50 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {error}
+        </p>
+      )}
       <div className="space-y-1">
         <label className="text-sm font-medium">Nombre *</label>
         <input required value={name} onChange={(e) => setName(e.target.value)} className={inputClass} placeholder="ej. Proteínas" />

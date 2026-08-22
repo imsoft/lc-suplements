@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { CldImage } from "next-cloudinary";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { Delete01Icon } from "@hugeicons/core-free-icons";
@@ -24,18 +24,23 @@ interface CartItem {
 
 export function CartItemRow({ item }: { item: CartItem }) {
   const [isPending, startTransition] = useTransition();
+  const [error, setError] = useState<string | null>(null);
   const price = Number(item.variant.price);
   const image = item.product.images[0];
 
   function changeQty(newQty: number) {
+    setError(null);
     startTransition(async () => {
-      await updateCartItem({ itemId: item.id, quantity: newQty });
+      const result = await updateCartItem({ itemId: item.id, quantity: newQty });
+      if (result.error) setError(result.error);
     });
   }
 
   function remove() {
+    setError(null);
     startTransition(async () => {
-      await removeCartItem(item.id);
+      const result = await removeCartItem(item.id);
+      if (result.error) setError(result.error);
     });
   }
 
@@ -63,6 +68,9 @@ export function CartItemRow({ item }: { item: CartItem }) {
         <p className="text-sm font-bold">
           ${price.toLocaleString("es-MX", { minimumFractionDigits: 2 })}
         </p>
+        {error && (
+          <p role="alert" className="text-xs text-destructive">{error}</p>
+        )}
       </div>
 
       <div className="flex flex-col items-end justify-between gap-2">

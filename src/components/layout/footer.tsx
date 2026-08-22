@@ -1,7 +1,17 @@
 import Link from "next/link";
+import { db } from "@/lib/db";
 import { SiteLogo } from "@/components/brand/site-logo";
 
-export function Footer() {
+export async function Footer() {
+  // Se leen de la base de datos: los enlaces fijos apuntaban a categorías
+  // ("proteinas", "creatinas"...) que no existen y devolvían cero resultados.
+  const categories = await db.category.findMany({
+    where: { parentId: null },
+    orderBy: { name: "asc" },
+    take: 6,
+    select: { id: true, name: true, slug: true },
+  });
+
   return (
     <footer className="mt-auto border-t border-border bg-secondary">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
@@ -19,10 +29,14 @@ export function Footer() {
               Productos
             </h3>
             <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><Link href="/productos?category=proteinas" className="hover:text-primary">Proteínas</Link></li>
-              <li><Link href="/productos?category=creatinas" className="hover:text-primary">Creatinas</Link></li>
-              <li><Link href="/productos?category=vitaminas" className="hover:text-primary">Vitaminas</Link></li>
-              <li><Link href="/productos?category=pre-workout" className="hover:text-primary">Pre-Workout</Link></li>
+              {categories.map((cat) => (
+                <li key={cat.id}>
+                  <Link href={`/productos?category=${cat.slug}`} className="hover:text-primary">
+                    {cat.name}
+                  </Link>
+                </li>
+              ))}
+              <li><Link href="/productos" className="hover:text-primary">Ver todo el catálogo</Link></li>
             </ul>
           </div>
 

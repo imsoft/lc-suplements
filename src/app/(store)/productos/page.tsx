@@ -43,19 +43,12 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
     }),
   };
 
-  const orderBy: { createdAt?: "asc" | "desc"; isFeatured?: "asc" | "desc" } = (() => {
-    switch (params.sort) {
-      case "price-asc":
-      case "price-desc":
-        return { createdAt: "desc" as const };
-      case "newest":
-        return { createdAt: "desc" as const };
-      default:
-        return { isFeatured: "desc" as const };
-    }
-  })();
+  const orderBy =
+    params.sort === "newest"
+      ? { createdAt: "desc" as const }
+      : { isFeatured: "desc" as const };
 
-  const products = await db.product.findMany({
+  const allProducts = await db.product.findMany({
     where,
     orderBy,
     include: {
@@ -65,6 +58,29 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
       reviews: { select: { rating: true } },
     },
   });
+
+  // El precio vive en las variantes, así que Prisma no puede ordenar por él
+  // directamente: se ordena en memoria por el precio más bajo de cada producto.
+  const lowestPrice = (p: (typeof allProducts)[number]) =>
+    p.variants.length ? Number(p.variants[0].price) : null;
+
+  function byPrice(direction: 1 | -1) {
+    return (a: (typeof allProducts)[number], b: (typeof allProducts)[number]) => {
+      const pa = lowestPrice(a);
+      const pb = lowestPrice(b);
+      // Los productos sin precio siempre van al final, en ambos sentidos.
+      if (pa === null) return pb === null ? 0 : 1;
+      if (pb === null) return -1;
+      return (pa - pb) * direction;
+    };
+  }
+
+  const products =
+    params.sort === "price-asc"
+      ? [...allProducts].sort(byPrice(1))
+      : params.sort === "price-desc"
+        ? [...allProducts].sort(byPrice(-1))
+        : allProducts;
 
   const brands = await db.product.findMany({
     where: { isActive: true, brand: { not: null } },
