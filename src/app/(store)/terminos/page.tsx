@@ -19,7 +19,7 @@ export default function TerminosPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-primary uppercase tracking-wider">1. Aceptación</h2>
           <p className="text-muted-foreground leading-relaxed">
-            Al acceder y utilizar el sitio web de <strong>LC Suplements</strong> (en adelante "la tienda"),
+            Al acceder y utilizar el sitio web de <strong>LC Suplements</strong> (en adelante “la tienda”),
             el usuario acepta de forma expresa los presentes Términos y Condiciones. Si no está de acuerdo
             con alguno de ellos, le pedimos que se abstenga de usar la tienda.
           </p>

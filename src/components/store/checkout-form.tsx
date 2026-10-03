@@ -39,6 +39,8 @@ interface CheckoutFormProps {
   isGuest: boolean;
 }
 
+const Req = () => <span className="text-destructive"> *</span>;
+
 export function CheckoutForm({
   cart,
   subtotal,
@@ -90,8 +92,6 @@ export function CheckoutForm({
 
   const inputClass =
     "w-full rounded border border-input bg-background px-3 py-2 text-sm outline-none focus:border-primary focus:ring-1 focus:ring-primary";
-
-  const Req = () => <span className="text-destructive"> *</span>;
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-3">

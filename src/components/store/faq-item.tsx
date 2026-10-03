@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 interface FaqItemProps {
   q: string;
@@ -9,7 +9,6 @@ interface FaqItemProps {
 
 export function FaqItem({ q, a }: FaqItemProps) {
   const [open, setOpen] = useState(false);
-  const bodyRef = useRef<HTMLDivElement>(null);
 
   return (
     <div
@@ -36,27 +35,29 @@ export function FaqItem({ q, a }: FaqItemProps) {
         </span>
       </button>
 
-      {/* Animated height container */}
+      {/* Animated height container: la fila del grid pasa de 0fr a 1fr */}
       <div
         style={{
-          height: open ? (bodyRef.current?.scrollHeight ?? 0) : 0,
-          overflow: "hidden",
-          transition: "height 450ms cubic-bezier(0.16, 1, 0.3, 1)",
+          display: "grid",
+          gridTemplateRows: open ? "1fr" : "0fr",
+          transition: "grid-template-rows 450ms cubic-bezier(0.16, 1, 0.3, 1)",
         }}
       >
-        <div ref={bodyRef} className="border-t border-border px-6 py-5">
-          <p
-            className="leading-relaxed text-muted-foreground"
-            style={{
-              opacity: open ? 1 : 0,
-              transform: open ? "translateY(0)" : "translateY(10px)",
-              transition: open
-                ? "opacity 350ms ease 120ms, transform 350ms ease 120ms"
-                : "opacity 150ms ease, transform 150ms ease",
-            }}
-          >
-            {a}
-          </p>
+        <div style={{ minHeight: 0, overflow: "hidden" }}>
+          <div className="border-t border-border px-6 py-5">
+            <p
+              className="leading-relaxed text-muted-foreground"
+              style={{
+                opacity: open ? 1 : 0,
+                transform: open ? "translateY(0)" : "translateY(10px)",
+                transition: open
+                  ? "opacity 350ms ease 120ms, transform 350ms ease 120ms"
+                  : "opacity 150ms ease, transform 150ms ease",
+              }}
+            >
+              {a}
+            </p>
+          </div>
         </div>
       </div>
     </div>

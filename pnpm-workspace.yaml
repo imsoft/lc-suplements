@@ -8,3 +8,6 @@ allowBuilds:
 ignoredBuiltDependencies:
   - sharp
   - unrs-resolver
+
+overrides:
+  mysql2: ^3.24.5

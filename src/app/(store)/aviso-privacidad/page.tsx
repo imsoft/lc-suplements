@@ -19,7 +19,7 @@ export default function AvisoPrivacidadPage() {
         <section className="space-y-3">
           <h2 className="text-lg font-bold text-primary uppercase tracking-wider">Responsable</h2>
           <p className="text-muted-foreground leading-relaxed">
-            <strong>LC Suplements</strong> (en adelante "LC Suplements" o "el Responsable"), con domicilio
+            <strong>LC Suplements</strong> (en adelante “LC Suplements” o “el Responsable”), con domicilio
             en <span className="font-medium text-primary">[DOMICILIO_COMPLETO]</span>, es responsable del
             tratamiento de sus datos personales conforme a lo establecido en la{" "}
             <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares
@@ -65,7 +65,7 @@ export default function AvisoPrivacidadPage() {
             Si no desea que sus datos sean tratados para las finalidades secundarias, puede manifestarlo
             enviando un correo a{" "}
             <span className="font-medium text-primary">[CORREO_CONTACTO]</span>{" "}
-            con el asunto <em>"Opt-out comunicaciones"</em>.
+            con el asunto <em>“Opt-out comunicaciones”</em>.
           </p>
         </section>
 

@@ -42,10 +42,12 @@ export function Header({ categories = [] }: HeaderProps) {
   const pathname = usePathname();
 
   // Close mobile menu on route change
-  useEffect(() => {
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     setMobileOpen(false);
     setMobileCatsOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
     if (searchOpen) searchRef.current?.focus();
