@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
@@ -5,6 +6,7 @@ import { headers } from "next/headers";
 import { ProductGallery } from "@/components/store/product-gallery";
 import { ProductActions } from "@/components/store/product-actions";
 import { ReviewSection } from "@/components/store/review-section";
+import { ProductCard } from "@/components/store/product-card";
 import type { Metadata } from "next";
 
 interface ProductPageProps {
@@ -62,6 +64,19 @@ export default async function ProductPage({ params }: ProductPageProps) {
   });
 
   if (!product) notFound();
+
+  const relatedProducts = await db.product.findMany({
+    where: { isActive: true, categoryId: product.categoryId, id: { not: product.id } },
+    orderBy: { isFeatured: "desc" },
+    take: 8,
+    include: {
+      images: { where: { isPrimary: true }, take: 1 },
+      variants: { where: { isActive: true }, orderBy: { price: "asc" }, take: 1 },
+      reviews: { select: { rating: true } },
+    },
+  });
+
+  const categoryHref = `/productos?category=${product.category.slug}`;
 
   const session = await auth.api.getSession({ headers: await headers() });
 
@@ -123,6 +138,33 @@ export default async function ProductPage({ params }: ProductPageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      <nav aria-label="Navegación del catálogo" className="mb-6 flex flex-col gap-3">
+        <Link
+          href={categoryHref}
+          className="inline-flex w-fit items-center gap-2 rounded border border-border px-3 py-2 text-sm font-medium transition-colors hover:border-primary hover:text-primary"
+        >
+          <span aria-hidden="true">←</span>
+          Volver a {product.category.name}
+        </Link>
+        <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
+          <li>
+            <Link href="/productos" className="hover:text-primary hover:underline">
+              Productos
+            </Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li>
+            <Link href={categoryHref} className="hover:text-primary hover:underline">
+              {product.category.name}
+            </Link>
+          </li>
+          <li aria-hidden="true">/</li>
+          <li aria-current="page" className="line-clamp-1 text-foreground">
+            {product.name}
+          </li>
+        </ol>
+      </nav>
+
       <div className="grid gap-8 lg:grid-cols-2">
         <ProductGallery images={product.images} productName={product.name} />
 
@@ -163,6 +205,30 @@ export default async function ProductPage({ params }: ProductPageProps) {
           />
         </div>
       </div>
+
+      {relatedProducts.length > 0 && (
+        <section className="mt-12">
+          <div className="mb-4 flex items-center justify-between gap-4">
+            <h2 className="text-xl font-bold tracking-tight">
+              Más de {product.category.name}
+            </h2>
+            <Link href={categoryHref} className="shrink-0 text-sm text-primary hover:underline">
+              Ver todos →
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {relatedProducts.map((related) => (
+              <ProductCard
+                key={related.id}
+                product={{
+                  ...related,
+                  variants: related.variants.map((v) => ({ price: Number(v.price) })),
+                }}
+              />
+            ))}
+          </div>
+        </section>
+      )}
 
       <ReviewSection
         productId={product.id}
